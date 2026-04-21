@@ -4,8 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0a0e14">
+<meta name="format-detection" content="telephone=no">
 <title>NO₂ Analyzer · Merckoquant 1.10007</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,53 +27,63 @@
   --danger: #ff5b5b;
   --warning: #ffb84d;
   --success: #4ade80;
-  --chem-1: #fde4ec;
-  --chem-2: #f9b8cc;
-  --chem-3: #f088a8;
-  --chem-4: #d85f88;
-  --chem-5: #b83a6a;
-  --chem-6: #8a1f4e;
-  --chem-7: #5a1040;
-  --mono: 'JetBrains Mono', ui-monospace, monospace;
-  --serif: 'Fraunces', Georgia, serif;
+  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --serif: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --app-h: 100vh;
+  --app-h: 100dvh;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
 
-html, body {
+html {
+  height: -webkit-fill-available;
   height: 100%;
-  overflow: hidden;
+}
+
+body {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  min-height: 100dvh;
   background: var(--bg);
   color: var(--text);
   font-family: var(--mono);
   font-size: 14px;
   line-height: 1.5;
+  overflow: hidden;
   overscroll-behavior: none;
-}
-
-body {
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   background-image:
     radial-gradient(ellipse at top, rgba(212, 255, 58, 0.04), transparent 60%),
     radial-gradient(ellipse at bottom left, rgba(184, 58, 106, 0.05), transparent 50%);
-  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
 #app {
-  height: 100%;
+  height: 100vh;
+  height: 100dvh;
+  height: var(--app-h);
   width: 100%;
   max-width: 520px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   position: relative;
+  padding-top: env(safe-area-inset-top);
 }
 
-/* ==================== HEADER ==================== */
 header {
-  padding: 16px 20px 12px;
+  padding: 12px 20px 10px;
   border-bottom: 1px solid var(--border);
   background: var(--bg);
   z-index: 10;
+  flex-shrink: 0;
 }
 
 .header-row {
@@ -101,9 +113,9 @@ header {
 .device-label strong { color: var(--text-dim); font-weight: 500; }
 
 .strip-info {
-  margin-top: 10px;
+  margin-top: 8px;
   display: flex;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
   flex-wrap: wrap;
   font-size: 10px;
@@ -116,32 +128,36 @@ header {
   border: 1px solid var(--border);
   border-radius: 2px;
   color: var(--text-dim);
+  white-space: nowrap;
 }
 .strip-info .pill.live { color: var(--accent); border-color: var(--accent-dim); }
 
-/* ==================== MAIN ==================== */
 main {
-  flex: 1;
+  flex: 1 1 auto;
   overflow-y: auto;
+  overflow-x: hidden;
   position: relative;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  min-height: 0;
 }
 
 .view {
   display: none;
-  padding: 20px;
+  padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
+}
+.view.active {
+  display: block;
   animation: fadeIn 0.3s ease-out;
 }
-.view.active { display: block; }
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ==================== START SCREEN ==================== */
 .hero {
-  padding: 20px 0 28px;
+  padding: 16px 0 24px;
   border-bottom: 1px solid var(--border);
   margin-bottom: 20px;
 }
@@ -149,7 +165,7 @@ main {
 .hero h1 {
   font-family: var(--serif);
   font-weight: 400;
-  font-size: 34px;
+  font-size: 32px;
   line-height: 1.05;
   letter-spacing: -0.03em;
   margin-bottom: 14px;
@@ -177,10 +193,20 @@ main {
 }
 .hero .formula sub { font-size: 8px; }
 
-/* Reference scale display */
-.ref-scale {
-  margin-bottom: 24px;
+.https-warn {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: rgba(255, 91, 91, 0.08);
+  border: 1px solid var(--danger);
+  font-size: 12px;
+  color: var(--danger);
+  display: none;
 }
+.https-warn.show { display: block; }
+.https-warn strong { display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.08em; font-size: 10px; }
+
+.ref-scale { margin-bottom: 20px; }
+
 .section-title {
   font-size: 10px;
   text-transform: uppercase;
@@ -202,12 +228,17 @@ main {
   background: var(--bg-elev);
 }
 .scale-cell {
+  height: 56px;
   aspect-ratio: 1/1.4;
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   padding: 4px;
+  min-height: 56px;
+}
+@supports (aspect-ratio: 1/1) {
+  .scale-cell { height: auto; }
 }
 .scale-cell .value {
   font-size: 10px;
@@ -217,11 +248,10 @@ main {
   font-family: var(--mono);
 }
 
-/* Workflow steps */
 .steps {
   display: grid;
   gap: 10px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 .step {
   display: flex;
@@ -250,7 +280,6 @@ main {
   line-height: 1.5;
 }
 
-/* Safety warnings */
 .safety-box {
   border: 1px solid var(--warning);
   background: rgba(255, 184, 77, 0.05);
@@ -263,15 +292,8 @@ main {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
 }
-.safety-box ul {
-  list-style: none;
-  font-size: 12px;
-  color: var(--text-dim);
-}
+.safety-box ul { list-style: none; font-size: 12px; color: var(--text-dim); }
 .safety-box li {
   padding-left: 14px;
   position: relative;
@@ -286,7 +308,6 @@ main {
   font-weight: bold;
 }
 
-/* ==================== BUTTONS ==================== */
 .btn {
   display: block;
   width: 100%;
@@ -302,9 +323,13 @@ main {
   cursor: pointer;
   transition: transform 0.1s, background 0.2s;
   position: relative;
+  touch-action: manipulation;
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 0;
+  min-height: 48px;
 }
-.btn:hover { background: #c2ed22; }
-.btn:active { transform: scale(0.98); }
+.btn:active { transform: scale(0.98); background: #c2ed22; }
 .btn:disabled {
   background: var(--border);
   color: var(--text-faint);
@@ -315,12 +340,7 @@ main {
   color: var(--text);
   border: 1px solid var(--border-bright);
 }
-.btn.secondary:hover { background: var(--bg-elev); }
-.btn.danger {
-  background: transparent;
-  color: var(--danger);
-  border: 1px solid var(--danger);
-}
+.btn.secondary:active { background: var(--bg-elev); }
 
 .btn-row {
   display: grid;
@@ -334,23 +354,31 @@ main {
   margin-left: 6px;
   transition: transform 0.2s;
 }
-.btn:hover .arrow { transform: translateX(3px); }
 
-/* ==================== CAMERA VIEW ==================== */
 #cameraView {
-  padding: 0;
-  height: 100%;
   display: none;
-  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  height: var(--app-h);
+  z-index: 50;
   background: #000;
+  flex-direction: column;
+  padding: 0;
 }
 #cameraView.active { display: flex; }
 
 .camera-container {
-  flex: 1;
+  flex: 1 1 auto;
   position: relative;
   overflow: hidden;
   background: #000;
+  min-height: 0;
 }
 
 #videoEl {
@@ -358,61 +386,75 @@ main {
   height: 100%;
   object-fit: cover;
   display: block;
+  background: #000;
+  cursor: crosshair;
+  touch-action: manipulation;
 }
 
-/* Alignment overlay */
-.overlay-svg {
+.overlay-container {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  width: 100%;
-  height: 100%;
+  z-index: 2;
 }
 
-.align-guide {
-  stroke: var(--accent);
-  stroke-width: 2;
-  fill: none;
-  stroke-dasharray: 6 4;
+.guide-box {
+  position: absolute;
+  border: 2px dashed var(--accent);
+  box-sizing: border-box;
+  transition: border-color 0.3s;
 }
-.align-guide.locked {
-  stroke: var(--success);
-  stroke-dasharray: none;
+.guide-box.locked {
+  border-color: var(--success);
+  border-style: solid;
 }
+.guide-box .label {
+  position: absolute;
+  top: -22px;
+  left: 0;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--accent);
+  background: rgba(0,0,0,0.6);
+  padding: 2px 6px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.guide-box.locked .label { color: var(--success); }
 
-.pad-indicator {
-  stroke: rgba(212, 255, 58, 0.7);
-  stroke-width: 1.5;
-  fill: rgba(212, 255, 58, 0.08);
-  stroke-dasharray: 3 3;
+.guide-strip { left: 15%; right: 15%; top: 25%; height: 12%; }
+.guide-pad {
+  left: 18%;
+  top: 27%;
+  width: 10%;
+  height: 8%;
+  border-style: dotted;
+  background: rgba(212, 255, 58, 0.08);
 }
-.pad-indicator.locked {
-  stroke: var(--success);
-  fill: rgba(74, 222, 128, 0.15);
-  stroke-dasharray: none;
-}
+.guide-scale { left: 15%; right: 15%; top: 55%; height: 14%; }
 
-/* Quality HUD */
 .quality-hud {
   position: absolute;
-  top: 12px;
+  top: calc(12px + env(safe-area-inset-top));
   left: 12px;
   right: 12px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 6px;
   pointer-events: none;
+  z-index: 3;
 }
 
 .hud-chip {
   background: rgba(10, 14, 20, 0.85);
-  backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   border: 1px solid rgba(255,255,255,0.1);
   padding: 6px 8px;
   font-size: 9px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  transition: border-color 0.2s;
 }
 .hud-chip .label { color: var(--text-faint); display: block; margin-bottom: 2px; font-size: 8px; }
 .hud-chip .value { color: var(--text); font-weight: 700; font-size: 11px; }
@@ -425,18 +467,19 @@ main {
 
 .camera-status {
   position: absolute;
-  bottom: 100px;
+  bottom: 160px;
   left: 12px;
   right: 12px;
   background: rgba(10, 14, 20, 0.9);
-  backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   padding: 12px 16px;
   border: 1px solid var(--border);
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: 12px;
+  z-index: 3;
 }
 .camera-status .indicator {
   width: 8px;
@@ -457,8 +500,8 @@ main {
   50% { opacity: 0.3; }
 }
 
-/* Camera controls */
 .camera-controls {
+  flex-shrink: 0;
   padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
   background: #000;
   display: flex;
@@ -475,18 +518,25 @@ main {
   border: 1px solid var(--border);
   color: var(--text);
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 18px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 12px;
+  touch-action: manipulation;
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 0;
 }
 .ctrl-btn:active { background: var(--bg-card); }
+.ctrl-btn.hidden { visibility: hidden; }
+.ctrl-btn.active { color: var(--accent); border-color: var(--accent-dim); }
 
 .shutter {
   width: 72px;
   height: 72px;
+  min-width: 72px;
   border-radius: 50%;
   border: 3px solid var(--text);
   background: var(--text);
@@ -494,6 +544,10 @@ main {
   cursor: pointer;
   transition: transform 0.1s;
   flex-shrink: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  padding: 0;
+  touch-action: manipulation;
 }
 .shutter::after {
   content: '';
@@ -508,10 +562,161 @@ main {
 .shutter:active { transform: scale(0.92); }
 .shutter:disabled { opacity: 0.4; cursor: not-allowed; }
 
-/* ==================== RESULT VIEW ==================== */
+/* Tap-to-focus indicator */
+.focus-ring {
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(1.5);
+  z-index: 4;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.5);
+}
+.focus-ring.active {
+  animation: focusPulse 0.7s ease-out;
+}
+@keyframes focusPulse {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(1.8); }
+  30%  { opacity: 1; transform: translate(-50%, -50%) scale(1.0); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+}
+
+/* Tap-to-capture large touch zone inside camera view */
+.tap-capture-zone {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Big visible capture button overlay (fallback if bottom bar is clipped) */
+.big-capture {
+  position: absolute;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  background: var(--accent);
+  color: var(--bg);
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 14px 28px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 0 3px rgba(212, 255, 58, 0.2);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 2px;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.big-capture:active {
+  transform: translateX(-50%) scale(0.96);
+  background: #c2ed22;
+}
+.big-capture::before {
+  content: '';
+  width: 14px;
+  height: 14px;
+  background: var(--bg);
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Zoom slider */
+.zoom-control {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 4;
+  background: rgba(10, 14, 20, 0.85);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  padding: 10px 6px;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 40px;
+}
+.zoom-control.visible { display: flex; }
+.zoom-slider {
+  -webkit-appearance: slider-vertical;
+  appearance: slider-vertical;
+  writing-mode: vertical-lr;
+  direction: rtl;
+  width: 20px;
+  height: 120px;
+  background: transparent;
+  touch-action: none;
+}
+.zoom-label {
+  font-size: 9px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.zoom-value {
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 700;
+  font-family: var(--mono);
+  min-width: 28px;
+  text-align: center;
+}
+
+/* Distance/focus hint overlay */
+.focus-hint {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(10, 14, 20, 0.9);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-bright);
+  padding: 16px 20px;
+  max-width: 280px;
+  text-align: center;
+  z-index: 7;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.focus-hint.show { opacity: 1; }
+.focus-hint .icon {
+  font-size: 28px;
+  margin-bottom: 6px;
+  display: block;
+}
+.focus-hint .title {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--accent);
+}
+.focus-hint .sub {
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
 .result-hero {
   text-align: center;
-  padding: 24px 0 28px;
+  padding: 20px 0 24px;
   border-bottom: 1px solid var(--border);
   margin-bottom: 20px;
 }
@@ -526,7 +731,7 @@ main {
 
 .result-value {
   font-family: var(--serif);
-  font-size: 76px;
+  font-size: 68px;
   font-weight: 900;
   line-height: 0.95;
   letter-spacing: -0.04em;
@@ -576,7 +781,6 @@ main {
 }
 .result-range strong { color: var(--text); }
 
-/* Analysis breakdown */
 .analysis-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -602,10 +806,7 @@ main {
 }
 .metric-value .secondary { color: var(--text-dim); font-size: 11px; font-weight: 400; }
 
-/* Measured color vs reference */
-.comparison {
-  margin-bottom: 20px;
-}
+.comparison { margin-bottom: 20px; }
 .comp-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -613,10 +814,14 @@ main {
   margin-top: 8px;
 }
 .color-swatch {
+  height: 80px;
   aspect-ratio: 1.6/1;
   border: 1px solid var(--border);
   position: relative;
   overflow: hidden;
+}
+@supports (aspect-ratio: 1/1) {
+  .color-swatch { height: auto; }
 }
 .color-swatch .tag {
   position: absolute;
@@ -630,17 +835,14 @@ main {
   text-transform: uppercase;
 }
 
-/* Scale with matched position */
 .matched-scale {
   position: relative;
   margin-bottom: 8px;
-}
-.matched-scale .scale-strip {
-  margin-top: 6px;
+  padding-top: 18px;
 }
 .match-marker {
   position: absolute;
-  top: -10px;
+  top: 0;
   width: 14px;
   height: 14px;
   transform: translateX(-50%);
@@ -650,10 +852,10 @@ main {
 .match-marker svg {
   width: 100%;
   height: 100%;
+  -webkit-filter: drop-shadow(0 2px 4px rgba(212, 255, 58, 0.4));
   filter: drop-shadow(0 2px 4px rgba(212, 255, 58, 0.4));
 }
 
-/* Interpretation */
 .interpretation {
   background: var(--bg-elev);
   border-left: 2px solid var(--accent);
@@ -679,7 +881,6 @@ main {
   font-weight: 600;
 }
 
-/* Preview image */
 .preview-wrap {
   margin-bottom: 20px;
   border: 1px solid var(--border);
@@ -689,6 +890,7 @@ main {
 .preview-wrap canvas, .preview-wrap img {
   width: 100%;
   display: block;
+  height: auto;
 }
 .preview-caption {
   margin-top: 6px;
@@ -699,18 +901,19 @@ main {
   text-align: center;
 }
 
-/* ==================== MODAL / ERROR ==================== */
 .modal {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.8);
-  backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   display: none;
   align-items: center;
   justify-content: center;
   padding: 20px;
   z-index: 100;
+  padding-top: calc(20px + env(safe-area-inset-top));
+  padding-bottom: calc(20px + env(safe-area-inset-bottom));
 }
 .modal.active { display: flex; }
 .modal-content {
@@ -719,6 +922,8 @@ main {
   padding: 24px;
   max-width: 420px;
   width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 .modal h3 {
   font-family: var(--serif);
@@ -733,25 +938,21 @@ main {
   line-height: 1.6;
 }
 
-/* ==================== CAPTURE FLASH ==================== */
 #captureFlash {
   position: fixed;
   inset: 0;
   background: white;
   opacity: 0;
   pointer-events: none;
-  z-index: 50;
+  z-index: 60;
 }
-#captureFlash.flash {
-  animation: flash 0.4s ease-out;
-}
+#captureFlash.flash { animation: flash 0.4s ease-out; }
 @keyframes flash {
   0% { opacity: 0; }
   20% { opacity: 0.9; }
   100% { opacity: 0; }
 }
 
-/* ==================== LOADING ==================== */
 .analyzing {
   position: absolute;
   inset: 0;
@@ -769,6 +970,7 @@ main {
   font-size: 24px;
   font-weight: 600;
   margin-bottom: 6px;
+  text-align: center;
 }
 .analyzing-title em { color: var(--accent); font-style: italic; }
 .analyzing-sub {
@@ -777,6 +979,7 @@ main {
   letter-spacing: 0.12em;
   color: var(--text-dim);
   margin-bottom: 24px;
+  text-align: center;
 }
 .progress {
   width: 200px;
@@ -804,22 +1007,14 @@ main {
   color: var(--text-faint);
   text-align: center;
   min-height: 20px;
-}
-.analyzing-steps span {
-  display: inline-block;
-  animation: fadeStep 0.4s ease-out;
-}
-@keyframes fadeStep {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+  padding: 0 20px;
 }
 
-/* ==================== SCROLLBAR ==================== */
 main::-webkit-scrollbar { width: 0; }
 
-/* Footer */
 footer {
-  padding: 12px 20px;
+  flex-shrink: 0;
+  padding: 10px 20px calc(10px + env(safe-area-inset-bottom));
   text-align: center;
   font-size: 9px;
   color: var(--text-faint);
@@ -829,13 +1024,19 @@ footer {
 }
 footer strong { color: var(--text-dim); }
 
-/* ==================== RESPONSIVE ==================== */
 @media (max-height: 700px) {
-  .result-value { font-size: 60px; }
-  .hero h1 { font-size: 28px; }
+  .result-value { font-size: 56px; }
+  .hero h1 { font-size: 26px; }
+  .hero { padding: 10px 0 18px; margin-bottom: 16px; }
+  header { padding: 10px 20px 8px; }
 }
 @media (min-width: 480px) {
-  .hero h1 { font-size: 40px; }
+  .hero h1 { font-size: 38px; }
+}
+
+header, footer, .camera-controls, .quality-hud, .camera-status, .btn, .ctrl-btn, .shutter {
+  -webkit-user-select: none;
+  user-select: none;
 }
 </style>
 </head>
@@ -843,7 +1044,6 @@ footer strong { color: var(--text-dim); }
 
 <div id="app">
 
-  <!-- ============== HEADER ============== -->
   <header>
     <div class="header-row">
       <div class="brand">NO<sub style="font-size:0.6em;">2</sub><span class="sub"> · analyzer</span></div>
@@ -859,10 +1059,8 @@ footer strong { color: var(--text-dim); }
     </div>
   </header>
 
-  <!-- ============== MAIN ============== -->
   <main>
 
-    <!-- START VIEW -->
     <section id="startView" class="view active">
       <div class="hero">
         <h1>Präzise <em>Nitrit</em>-Bestimmung<br>per Smartphone.</h1>
@@ -870,7 +1068,11 @@ footer strong { color: var(--text-dim); }
         <div class="formula">Azofarbstoff · Sulfanilsäure + NO₂⁻ → NNEDDC-Konjugat</div>
       </div>
 
-      <!-- Reference color scale -->
+      <div class="https-warn" id="httpsWarn">
+        <strong>⚠ HTTPS erforderlich</strong>
+        Der Kamerazugriff funktioniert auf iOS nur über eine sichere Verbindung (https://) oder localhost. Die aktuelle Seite wird ohne sichere Verbindung geladen.
+      </div>
+
       <div class="ref-scale">
         <div class="section-title">
           <span>Referenzskala</span>
@@ -879,7 +1081,6 @@ footer strong { color: var(--text-dim); }
         <div class="scale-strip" id="refScale"></div>
       </div>
 
-      <!-- Workflow steps -->
       <div class="section-title" style="margin-top:20px;">
         <span>Ablauf</span>
         <span class="unit">4 Schritte</span>
@@ -915,10 +1116,11 @@ footer strong { color: var(--text-dim); }
         </div>
       </div>
 
-      <!-- Safety / Quality -->
       <div class="safety-box">
         <h4>⚠ Qualitätssicherung</h4>
         <ul>
+          <li><strong>Mindestabstand 10–15 cm</strong> zur Kamera — iPhone fokussiert nicht näher</li>
+          <li>Auf den Streifen im Bild <strong>tippen</strong>, um Fokus zu setzen</li>
           <li>Nur bei gleichmäßiger, diffuser Beleuchtung aufnehmen (500–5000 Lux)</li>
           <li>Kein Blitz, keine direkte Sonneneinstrahlung, keine farbigen Lichtquellen</li>
           <li>Weißen, neutralen Untergrund verwenden — kein Farbstich</li>
@@ -928,12 +1130,11 @@ footer strong { color: var(--text-dim); }
         </ul>
       </div>
 
-      <button class="btn" id="btnStart">
+      <button class="btn" id="btnStart" type="button">
         Messung starten <span class="arrow">→</span>
       </button>
     </section>
 
-    <!-- RESULT VIEW -->
     <section id="resultView" class="view">
       <div class="result-hero">
         <div class="result-label">Gemessene Konzentration</div>
@@ -949,7 +1150,6 @@ footer strong { color: var(--text-dim); }
         <div class="result-range" id="resultRange"></div>
       </div>
 
-      <!-- Matched scale visualization -->
       <div class="comparison">
         <div class="section-title">
           <span>Position auf Referenzskala</span>
@@ -957,13 +1157,12 @@ footer strong { color: var(--text-dim); }
         </div>
         <div class="matched-scale">
           <div class="match-marker" id="matchMarker">
-            <svg viewBox="0 0 14 14"><path d="M7 14 L0 4 L14 4 Z" fill="var(--accent)"/></svg>
+            <svg viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg"><path d="M7 14 L0 4 L14 4 Z" fill="#d4ff3a"/></svg>
           </div>
           <div class="scale-strip" id="refScaleResult"></div>
         </div>
       </div>
 
-      <!-- Measured vs reference -->
       <div class="section-title">
         <span>Farbabgleich</span>
         <span class="unit">sRGB · Lab</span>
@@ -977,7 +1176,6 @@ footer strong { color: var(--text-dim); }
         </div>
       </div>
 
-      <!-- Analysis metrics -->
       <div class="section-title" style="margin-top:20px;">
         <span>Bildanalyse</span>
         <span class="unit">Diagnostik</span>
@@ -1001,125 +1199,160 @@ footer strong { color: var(--text-dim); }
         </div>
       </div>
 
-      <!-- Interpretation -->
       <div class="interpretation" id="interpretBox">
         <h4>Laboranten-Hinweis</h4>
         <p id="interpretText"></p>
       </div>
 
-      <!-- Captured image -->
       <div class="preview-wrap">
         <canvas id="previewCanvas"></canvas>
         <div class="preview-caption">Analysiertes Bild · ROI markiert</div>
       </div>
 
       <div class="btn-row">
-        <button class="btn secondary" id="btnAgain">Neue Messung</button>
-        <button class="btn" id="btnExport">Exportieren</button>
+        <button class="btn secondary" id="btnAgain" type="button">Neue Messung</button>
+        <button class="btn" id="btnExport" type="button">Exportieren</button>
       </div>
     </section>
 
   </main>
-
-  <!-- ============== CAMERA OVERLAY ============== -->
-  <section id="cameraView">
-    <div class="camera-container">
-      <video id="videoEl" autoplay playsinline muted></video>
-
-      <svg class="overlay-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-        <!-- Strip alignment -->
-        <rect id="stripGuide" class="align-guide" x="15" y="25" width="70" height="12" rx="1"/>
-        <!-- Reaction pad -->
-        <rect id="padGuide" class="pad-indicator" x="18" y="27" width="10" height="8"/>
-        <!-- Scale guide -->
-        <rect id="scaleGuide" class="align-guide" x="15" y="55" width="70" height="14" rx="1"/>
-      </svg>
-
-      <div class="quality-hud">
-        <div class="hud-chip" id="hudLum">
-          <span class="label">Licht</span>
-          <span class="value">—</span>
-        </div>
-        <div class="hud-chip" id="hudStability">
-          <span class="label">Stabil.</span>
-          <span class="value">—</span>
-        </div>
-        <div class="hud-chip" id="hudWB">
-          <span class="label">WB</span>
-          <span class="value">—</span>
-        </div>
-        <div class="hud-chip" id="hudFocus">
-          <span class="label">Schärfe</span>
-          <span class="value">—</span>
-        </div>
-      </div>
-
-      <div class="camera-status" id="camStatus">
-        <div class="indicator"></div>
-        <div class="msg" id="camStatusMsg">Teststreifen mit Farbskala ins Bild bringen</div>
-      </div>
-
-      <div class="analyzing" id="analyzing">
-        <div class="analyzing-title">Analysiere <em>Probe</em></div>
-        <div class="analyzing-sub">CIE Lab · Farbraum-Normierung</div>
-        <div class="progress"></div>
-        <div class="analyzing-steps" id="analyzingStep"></div>
-      </div>
-    </div>
-
-    <div class="camera-controls">
-      <button class="ctrl-btn" id="btnCancel">✕</button>
-      <button class="shutter" id="btnShutter" disabled aria-label="Auslösen"></button>
-      <button class="ctrl-btn" id="btnTorch" title="Taschenlampe">⚡</button>
-    </div>
-  </section>
 
   <footer>
     <strong>NO₂ Analyzer</strong> · Kalibriert für Merckoquant® 1.10007 · Keine medizinische Diagnostik
   </footer>
 </div>
 
+<section id="cameraView">
+  <div class="camera-container">
+    <video id="videoEl" autoplay playsinline muted webkit-playsinline x5-playsinline disablepictureinpicture></video>
+
+    <div class="overlay-container">
+      <div class="guide-box guide-strip" id="stripGuide">
+        <span class="label">Teststreifen</span>
+      </div>
+      <div class="guide-box guide-pad" id="padGuide"></div>
+      <div class="guide-box guide-scale" id="scaleGuide">
+        <span class="label">Farbskala</span>
+      </div>
+    </div>
+
+    <div class="quality-hud">
+      <div class="hud-chip" id="hudLum">
+        <span class="label">Licht</span>
+        <span class="value">—</span>
+      </div>
+      <div class="hud-chip" id="hudStability">
+        <span class="label">Stabil.</span>
+        <span class="value">—</span>
+      </div>
+      <div class="hud-chip" id="hudWB">
+        <span class="label">WB</span>
+        <span class="value">—</span>
+      </div>
+      <div class="hud-chip" id="hudFocus">
+        <span class="label">Schärfe</span>
+        <span class="value">—</span>
+      </div>
+    </div>
+
+    <div class="camera-status" id="camStatus">
+      <div class="indicator"></div>
+      <div class="msg" id="camStatusMsg">Teststreifen mit Farbskala ins Bild bringen</div>
+    </div>
+
+    <!-- Tap-to-focus ring -->
+    <div class="focus-ring" id="focusRing"></div>
+
+    <!-- Big, always-visible capture button (guaranteed tappable) -->
+    <button class="big-capture" id="bigCapture" type="button">Aufnahme</button>
+
+    <!-- Zoom slider (shown if camera supports zoom) -->
+    <div class="zoom-control" id="zoomControl">
+      <span class="zoom-label">Zoom</span>
+      <input type="range" class="zoom-slider" id="zoomSlider" min="1" max="3" step="0.1" value="1" orient="vertical">
+      <span class="zoom-value" id="zoomValue">1.0×</span>
+    </div>
+
+    <!-- Focus / distance hint -->
+    <div class="focus-hint" id="focusHint">
+      <span class="icon">📏</span>
+      <div class="title">Abstand prüfen</div>
+      <div class="sub">Mindestens <strong>10–15 cm</strong> Abstand zum Streifen.<br>Auf den Streifen <strong>tippen</strong>, um zu fokussieren.</div>
+    </div>
+
+    <div class="analyzing" id="analyzing">
+      <div class="analyzing-title">Analysiere <em>Probe</em></div>
+      <div class="analyzing-sub">CIE Lab · Farbraum-Normierung</div>
+      <div class="progress"></div>
+      <div class="analyzing-steps" id="analyzingStep"></div>
+    </div>
+  </div>
+
+  <div class="camera-controls">
+    <button class="ctrl-btn" id="btnCancel" type="button" aria-label="Abbrechen">✕</button>
+    <button class="shutter" id="btnShutter" type="button" aria-label="Auslösen"></button>
+    <button class="ctrl-btn hidden" id="btnTorch" type="button" aria-label="Taschenlampe">⚡</button>
+  </div>
+</section>
+
 <div id="captureFlash"></div>
 
-<!-- Error Modal -->
 <div class="modal" id="errorModal">
   <div class="modal-content">
     <h3 id="errorTitle">Kamerazugriff benötigt</h3>
-    <p id="errorText">Für die Auswertung muss der Kamerazugriff erlaubt sein. Bitte in den Browser-Einstellungen aktivieren und neu laden.</p>
-    <button class="btn secondary" id="btnCloseModal">Verstanden</button>
+    <p id="errorText">Für die Auswertung muss der Kamerazugriff erlaubt sein.</p>
+    <button class="btn secondary" id="btnCloseModal" type="button">Verstanden</button>
   </div>
 </div>
 
 <script>
-/* =======================================================
-   MERCKOQUANT 1.10007 — REFERENZ-FARBSKALA
-   Werte empirisch aus Merck-Original-Kalibrierkarte abgeleitet.
-   Die Teststreifen erzeugen ein rot-violettes Azofarbstoff-Konjugat.
-   Konzentrationen steigen → Farbton verschiebt von hellrosa zu tief
-   violett-rot (Chem. Reaktion: Griess-analog).
-======================================================= */
-const REFERENCE = [
+'use strict';
+
+/* ===== iOS Safari: dynamic viewport height ===== */
+function setAppHeight() {
+  document.documentElement.style.setProperty('--app-h', window.innerHeight + 'px');
+}
+setAppHeight();
+window.addEventListener('resize', setAppHeight);
+window.addEventListener('orientationchange', function() {
+  setTimeout(setAppHeight, 200);
+});
+
+/* ===== HTTPS secure context check ===== */
+function checkSecureContext() {
+  var isSecure = window.isSecureContext ||
+                 location.protocol === 'https:' ||
+                 location.hostname === 'localhost' ||
+                 location.hostname === '127.0.0.1';
+  if (!isSecure) {
+    document.getElementById('httpsWarn').classList.add('show');
+  }
+  return isSecure;
+}
+checkSecureContext();
+
+/* ===== Platform detection ===== */
+var IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+             (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+/* ===== Merckoquant 1.10007 reference scale ===== */
+var REFERENCE = [
   { value: 0,   rgb: [253, 228, 236], lab: null, label: '0' },
   { value: 2,   rgb: [249, 184, 204], lab: null, label: '2' },
   { value: 5,   rgb: [240, 136, 168], lab: null, label: '5' },
   { value: 10,  rgb: [216, 95, 136],  lab: null, label: '10' },
   { value: 20,  rgb: [184, 58, 106],  lab: null, label: '20' },
   { value: 40,  rgb: [138, 31, 78],   lab: null, label: '40' },
-  { value: 80,  rgb: [90, 16, 64],    lab: null, label: '80' },
+  { value: 80,  rgb: [90, 16, 64],    lab: null, label: '80' }
 ];
 
-/* =======================================================
-   FARBRAUM-KONVERTIERUNGEN
-   sRGB → linear RGB → XYZ (D65) → CIE Lab
-   Kolorimetrie erfordert Lab-Raum, da perzeptuell uniform.
-   Euklidischer Abstand in Lab (ΔE CIE76) ≈ menschliche Farbwahrnehmung.
-======================================================= */
+/* ===== Color space conversions (sRGB -> Lab D65) ===== */
 function srgbToLinear(c) {
   c = c / 255;
   return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
 }
 function rgbToXyz(r, g, b) {
-  const R = srgbToLinear(r), G = srgbToLinear(g), B = srgbToLinear(b);
+  var R = srgbToLinear(r), G = srgbToLinear(g), B = srgbToLinear(b);
   return {
     x: (R * 0.4124564 + G * 0.3575761 + B * 0.1804375) * 100,
     y: (R * 0.2126729 + G * 0.7151522 + B * 0.0721750) * 100,
@@ -1127,19 +1360,14 @@ function rgbToXyz(r, g, b) {
   };
 }
 function xyzToLab(x, y, z) {
-  // D65 reference white
-  const Xn = 95.047, Yn = 100.000, Zn = 108.883;
-  const f = t => t > 0.008856 ? Math.cbrt(t) : (7.787 * t + 16/116);
-  const fx = f(x / Xn), fy = f(y / Yn), fz = f(z / Zn);
-  return {
-    L: 116 * fy - 16,
-    a: 500 * (fx - fy),
-    b: 200 * (fy - fz)
-  };
+  var Xn = 95.047, Yn = 100.000, Zn = 108.883;
+  function f(t) { return t > 0.008856 ? Math.cbrt(t) : (7.787 * t + 16/116); }
+  var fx = f(x / Xn), fy = f(y / Yn), fz = f(z / Zn);
+  return { L: 116 * fy - 16, a: 500 * (fx - fy), b: 200 * (fy - fz) };
 }
 function rgbToLab(r, g, b) {
-  const { x, y, z } = rgbToXyz(r, g, b);
-  return xyzToLab(x, y, z);
+  var xyz = rgbToXyz(r, g, b);
+  return xyzToLab(xyz.x, xyz.y, xyz.z);
 }
 function deltaE(lab1, lab2) {
   return Math.sqrt(
@@ -1148,214 +1376,445 @@ function deltaE(lab1, lab2) {
     Math.pow(lab1.b - lab2.b, 2)
   );
 }
+REFERENCE.forEach(function(r) {
+  r.lab = rgbToLab(r.rgb[0], r.rgb[1], r.rgb[2]);
+});
 
-// Precompute Lab values for reference
-REFERENCE.forEach(r => { r.lab = rgbToLab(...r.rgb); });
-
-/* =======================================================
-   UI: REFERENZSKALA RENDERN
-======================================================= */
+/* ===== Render reference scales ===== */
 function renderScale(el) {
   el.innerHTML = '';
-  REFERENCE.forEach(r => {
-    const cell = document.createElement('div');
+  REFERENCE.forEach(function(r) {
+    var cell = document.createElement('div');
     cell.className = 'scale-cell';
-    cell.style.background = `rgb(${r.rgb.join(',')})`;
-    cell.innerHTML = `<div class="value">${r.label}</div>`;
+    cell.style.backgroundColor = 'rgb(' + r.rgb.join(',') + ')';
+    cell.innerHTML = '<div class="value">' + r.label + '</div>';
     el.appendChild(cell);
   });
 }
 renderScale(document.getElementById('refScale'));
 renderScale(document.getElementById('refScaleResult'));
 
-/* =======================================================
-   KAMERA-STEUERUNG
-======================================================= */
-let stream = null;
-let track = null;
-let torchOn = false;
-let qualityFrame = null;
-let stableFrames = 0;
-let lastLum = 0;
+/* ===== Camera handling (iOS Safari compatible) ===== */
+var stream = null;
+var track = null;
+var torchOn = false;
+var qualityFrame = null;
+var stableFrames = 0;
+var lastLum = 0;
+var cameraActive = false;
 
-const video = document.getElementById('videoEl');
-const shutter = document.getElementById('btnShutter');
-const camStatus = document.getElementById('camStatus');
-const camStatusMsg = document.getElementById('camStatusMsg');
-const stripGuide = document.getElementById('stripGuide');
-const padGuide = document.getElementById('padGuide');
-const scaleGuide = document.getElementById('scaleGuide');
+var video = document.getElementById('videoEl');
+var shutter = document.getElementById('btnShutter');
+var camStatus = document.getElementById('camStatus');
+var camStatusMsg = document.getElementById('camStatusMsg');
+var stripGuide = document.getElementById('stripGuide');
+var padGuide = document.getElementById('padGuide');
+var scaleGuide = document.getElementById('scaleGuide');
+var btnTorch = document.getElementById('btnTorch');
+var bigCapture = document.getElementById('bigCapture');
+var focusRing = document.getElementById('focusRing');
+var zoomControl = document.getElementById('zoomControl');
+var zoomSlider = document.getElementById('zoomSlider');
+var zoomValue = document.getElementById('zoomValue');
+var focusHint = document.getElementById('focusHint');
 
-async function startCamera() {
-  try {
-    // High resolution + continuous focus/white balance
-    const constraints = {
+function startCamera() {
+  return new Promise(function(resolve) {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      showError(
+        'Kamera nicht verfügbar',
+        'Dieser Browser unterstützt keinen Kamerazugriff. Bitte Safari (iOS 14.3+) oder einen aktuellen Browser verwenden.'
+      );
+      resolve(false);
+      return;
+    }
+
+    if (!window.isSecureContext &&
+        location.hostname !== 'localhost' &&
+        location.hostname !== '127.0.0.1') {
+      showError(
+        'Sichere Verbindung erforderlich',
+        'Der Kamerazugriff ist auf iOS nur über HTTPS möglich. Bitte die Seite über eine sichere Verbindung (https://) öffnen.'
+      );
+      resolve(false);
+      return;
+    }
+
+    // iOS Safari-safe: minimal constraints in initial call
+    var baseConstraints = {
+      audio: false,
       video: {
         facingMode: { ideal: 'environment' },
         width: { ideal: 1920 },
-        height: { ideal: 1080 },
-        focusMode: { ideal: 'continuous' },
-        whiteBalanceMode: { ideal: 'continuous' },
-        exposureMode: { ideal: 'continuous' }
-      },
-      audio: false
+        height: { ideal: 1080 }
+      }
     };
-    stream = await navigator.mediaDevices.getUserMedia(constraints);
-    video.srcObject = stream;
-    track = stream.getVideoTracks()[0];
-    await video.play();
 
-    // Start quality monitoring
-    startQualityMonitor();
-  } catch (err) {
-    console.error(err);
-    showError(
-      'Kamera nicht verfügbar',
-      'Der Kamerazugriff wurde verweigert oder ist nicht möglich. Bitte die Seite über HTTPS öffnen und Kamerazugriff erlauben.'
-    );
+    navigator.mediaDevices.getUserMedia(baseConstraints)
+      .catch(function(err1) {
+        console.warn('Primary constraints failed:', err1.name);
+        return navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: { facingMode: { ideal: 'environment' } }
+        });
+      })
+      .catch(function(err2) {
+        console.warn('Fallback constraints failed:', err2.name);
+        return navigator.mediaDevices.getUserMedia({ audio: false, video: true });
+      })
+      .then(function(s) {
+        stream = s;
+        video.srcObject = stream;
+        track = stream.getVideoTracks()[0];
+        return video.play();
+      })
+      .then(function() {
+        // Apply advanced constraints (non-standard, may silently fail on iOS)
+        return applyAdvancedConstraints();
+      })
+      .then(function() {
+        probeTorch();
+        probeZoom();
+        cameraActive = true;
+        startQualityMonitor();
+        showFocusHint();
+        resolve(true);
+      })
+      .catch(function(err) {
+        console.error('Camera error:', err);
+        handleCameraError(err);
+        resolve(false);
+      });
+  });
+}
+
+function handleCameraError(err) {
+  var title = 'Kamerazugriff verweigert';
+  var msg = 'Bitte Kamerazugriff in den Safari-Einstellungen erlauben und die Seite neu laden.';
+
+  if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+    title = 'Kamerazugriff verweigert';
+    msg = 'Bitte in <strong>Einstellungen → Safari → Kamera</strong> den Zugriff erlauben. Anschließend Seite neu laden.';
+  } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+    title = 'Keine Kamera gefunden';
+    msg = 'Auf diesem Gerät wurde keine verwendbare Kamera erkannt.';
+  } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+    title = 'Kamera bereits in Verwendung';
+    msg = 'Eine andere App oder ein anderer Tab nutzt gerade die Kamera. Bitte andere Anwendungen schließen.';
+  } else if (err.name === 'OverconstrainedError' || err.name === 'ConstraintNotSatisfiedError') {
+    title = 'Kamera inkompatibel';
+    msg = 'Die Kamera erfüllt nicht die Mindestanforderungen. Bitte anderes Gerät versuchen.';
+  } else if (err.name === 'SecurityError') {
+    title = 'Sicherheitsfehler';
+    msg = 'Der Kamerazugriff wurde aus Sicherheitsgründen blockiert. Die Seite muss über HTTPS geladen werden.';
+  }
+
+  showError(title, msg);
+}
+
+function applyAdvancedConstraints() {
+  if (!track) return Promise.resolve();
+  try {
+    var caps = track.getCapabilities ? track.getCapabilities() : {};
+    var advanced = [];
+
+    if (caps.focusMode && caps.focusMode.indexOf && caps.focusMode.indexOf('continuous') !== -1) {
+      advanced.push({ focusMode: 'continuous' });
+    }
+    if (caps.whiteBalanceMode && caps.whiteBalanceMode.indexOf && caps.whiteBalanceMode.indexOf('continuous') !== -1) {
+      advanced.push({ whiteBalanceMode: 'continuous' });
+    }
+    if (caps.exposureMode && caps.exposureMode.indexOf && caps.exposureMode.indexOf('continuous') !== -1) {
+      advanced.push({ exposureMode: 'continuous' });
+    }
+
+    if (advanced.length > 0) {
+      return track.applyConstraints({ advanced: advanced }).catch(function(e) {
+        console.log('Advanced constraints not applied:', e.message);
+      });
+    }
+  } catch (e) {
+    console.log('Capabilities probe failed:', e.message);
+  }
+  return Promise.resolve();
+}
+
+function probeTorch() {
+  if (!track) return;
+  try {
+    var caps = track.getCapabilities ? track.getCapabilities() : {};
+    if (caps.torch === true) {
+      btnTorch.classList.remove('hidden');
+    } else {
+      btnTorch.classList.add('hidden');
+    }
+  } catch (e) {
+    btnTorch.classList.add('hidden');
   }
 }
 
-function stopCamera() {
-  if (stream) {
-    stream.getTracks().forEach(t => t.stop());
-    stream = null;
+function probeZoom() {
+  if (!track) return;
+  try {
+    var caps = track.getCapabilities ? track.getCapabilities() : {};
+    if (caps.zoom && typeof caps.zoom.min === 'number' && typeof caps.zoom.max === 'number') {
+      var minZ = caps.zoom.min;
+      var maxZ = caps.zoom.max;
+      // Limit to reasonable range for color accuracy (usually 1x–3x)
+      var effectiveMax = Math.min(maxZ, 3);
+      if (effectiveMax > minZ + 0.1) {
+        zoomSlider.min = minZ;
+        zoomSlider.max = effectiveMax;
+        zoomSlider.step = (effectiveMax - minZ) / 20;
+        zoomSlider.value = minZ;
+        zoomValue.textContent = minZ.toFixed(1) + '×';
+        zoomControl.classList.add('visible');
+        return;
+      }
+    }
+    zoomControl.classList.remove('visible');
+  } catch (e) {
+    zoomControl.classList.remove('visible');
   }
+}
+
+function showFocusHint() {
+  focusHint.classList.add('show');
+  setTimeout(function() {
+    focusHint.classList.remove('show');
+  }, 3500);
+}
+
+function stopCamera() {
+  cameraActive = false;
   if (qualityFrame) {
     cancelAnimationFrame(qualityFrame);
     qualityFrame = null;
   }
+  if (stream) {
+    stream.getTracks().forEach(function(t) {
+      try { t.stop(); } catch(e) {}
+    });
+    stream = null;
+  }
+  if (video) {
+    try {
+      video.pause();
+      video.srcObject = null;
+    } catch(e) {}
+  }
+  track = null;
+  torchOn = false;
+  stableFrames = 0;
+  lastLum = 0;
 }
 
-async function toggleTorch() {
+function toggleTorch() {
   if (!track) return;
   try {
-    const caps = track.getCapabilities();
-    if (caps.torch) {
-      torchOn = !torchOn;
-      await track.applyConstraints({ advanced: [{ torch: torchOn }] });
-      document.getElementById('btnTorch').style.color = torchOn ? 'var(--accent)' : 'var(--text)';
-    }
-  } catch (e) { /* torch not supported */ }
+    var caps = track.getCapabilities ? track.getCapabilities() : {};
+    if (!caps.torch) return;
+    torchOn = !torchOn;
+    track.applyConstraints({ advanced: [{ torch: torchOn }] })
+      .then(function() {
+        btnTorch.classList.toggle('active', torchOn);
+      })
+      .catch(function(e) {
+        console.warn('Torch toggle failed:', e);
+        torchOn = false;
+        btnTorch.classList.remove('active');
+      });
+  } catch (e) {
+    console.warn('Torch error:', e);
+  }
 }
 
-/* =======================================================
-   ECHTZEIT-QUALITÄTSANALYSE
-   - Luminanz (korrekte Belichtung)
-   - Weißabgleich (neutraler Hintergrund)
-   - Schärfe (Laplace-Varianz)
-   - Stabilität (Frame-zu-Frame-Varianz)
-======================================================= */
-const qCanvas = document.createElement('canvas');
-const qCtx = qCanvas.getContext('2d', { willReadFrequently: true });
+/* Tap-to-focus: shows ring animation and attempts focus via pointsOfInterest */
+function handleVideoTap(e) {
+  if (!cameraActive || !video.videoWidth) return;
+
+  // Get tap coordinates relative to video element
+  var rect = video.getBoundingClientRect();
+  var touchX, touchY;
+  if (e.touches && e.touches.length > 0) {
+    touchX = e.touches[0].clientX - rect.left;
+    touchY = e.touches[0].clientY - rect.top;
+  } else if (e.changedTouches && e.changedTouches.length > 0) {
+    touchX = e.changedTouches[0].clientX - rect.left;
+    touchY = e.changedTouches[0].clientY - rect.top;
+  } else {
+    touchX = e.clientX - rect.left;
+    touchY = e.clientY - rect.top;
+  }
+
+  // Show focus ring animation at tap position
+  focusRing.style.left = touchX + 'px';
+  focusRing.style.top = touchY + 'px';
+  focusRing.classList.remove('active');
+  // Force reflow to restart animation
+  void focusRing.offsetWidth;
+  focusRing.classList.add('active');
+
+  // Hide focus hint once user has tapped
+  focusHint.classList.remove('show');
+
+  // Attempt to set focus point via camera capabilities
+  if (track && track.getCapabilities) {
+    try {
+      var caps = track.getCapabilities();
+      var constraints = [];
+
+      // pointsOfInterest: normalize to 0..1 relative to visible video
+      if (caps.pointsOfInterest) {
+        var normX = Math.max(0, Math.min(1, touchX / rect.width));
+        var normY = Math.max(0, Math.min(1, touchY / rect.height));
+        constraints.push({ pointsOfInterest: [{ x: normX, y: normY }] });
+      }
+
+      // Trigger a re-focus by toggling focusMode if supported
+      if (caps.focusMode) {
+        if (caps.focusMode.indexOf && caps.focusMode.indexOf('single-shot') !== -1) {
+          constraints.push({ focusMode: 'single-shot' });
+        } else if (caps.focusMode.indexOf && caps.focusMode.indexOf('continuous') !== -1) {
+          // Toggle to force refocus
+          track.applyConstraints({ advanced: [{ focusMode: 'manual' }] })
+            .then(function() {
+              return track.applyConstraints({ advanced: [{ focusMode: 'continuous' }] });
+            })
+            .catch(function() {});
+        }
+      }
+
+      if (constraints.length > 0) {
+        track.applyConstraints({ advanced: constraints }).catch(function(e) {
+          console.log('Focus constraint failed:', e.message);
+        });
+      }
+    } catch (err) {
+      console.log('Tap-to-focus not supported:', err.message);
+    }
+  }
+}
+
+/* Zoom handler */
+function handleZoomChange() {
+  if (!track) return;
+  var z = parseFloat(zoomSlider.value);
+  zoomValue.textContent = z.toFixed(1) + '×';
+  try {
+    track.applyConstraints({ advanced: [{ zoom: z }] }).catch(function(e) {
+      console.log('Zoom failed:', e.message);
+    });
+  } catch (e) {
+    console.log('Zoom not supported:', e.message);
+  }
+}
+
+/* ===== Real-time quality monitoring ===== */
+var qCanvas = document.createElement('canvas');
+var qCtx = qCanvas.getContext('2d');
 
 function startQualityMonitor() {
-  const tick = () => {
-    if (!video.videoWidth) {
+  function tick() {
+    if (!cameraActive) return;
+    if (!video.videoWidth || video.readyState < 2) {
       qualityFrame = requestAnimationFrame(tick);
       return;
     }
-    // Downsample for speed
-    const W = 120, H = 80;
-    qCanvas.width = W; qCanvas.height = H;
-    qCtx.drawImage(video, 0, 0, W, H);
-    const imgData = qCtx.getImageData(0, 0, W, H);
-    const quality = assessQuality(imgData);
-
-    updateQualityHUD(quality);
+    try {
+      var W = 120, H = 80;
+      qCanvas.width = W;
+      qCanvas.height = H;
+      qCtx.drawImage(video, 0, 0, W, H);
+      var imgData = qCtx.getImageData(0, 0, W, H);
+      var quality = assessQuality(imgData);
+      updateQualityHUD(quality);
+    } catch (e) {
+      console.warn('Quality probe error:', e.message);
+    }
     qualityFrame = requestAnimationFrame(tick);
-  };
+  }
   tick();
 }
 
 function assessQuality(imgData) {
-  const d = imgData.data;
-  let sumL = 0, sumR = 0, sumG = 0, sumB = 0;
-  let n = d.length / 4;
-  let histL = new Array(10).fill(0);
+  var d = imgData.data;
+  var sumL = 0, sumR = 0, sumG = 0, sumB = 0;
+  var n = d.length / 4;
+  var histL = [0,0,0,0,0,0,0,0,0,0];
 
-  for (let i = 0; i < d.length; i += 4) {
-    const r = d[i], g = d[i+1], b = d[i+2];
+  for (var i = 0; i < d.length; i += 4) {
+    var r = d[i], g = d[i+1], b = d[i+2];
     sumR += r; sumG += g; sumB += b;
-    // Rec. 709 luminance
-    const L = 0.2126*r + 0.7152*g + 0.0722*b;
+    var L = 0.2126*r + 0.7152*g + 0.0722*b;
     sumL += L;
-    const bucket = Math.min(9, Math.floor(L / 25.5));
+    var bucket = Math.min(9, Math.floor(L / 25.5));
     histL[bucket]++;
   }
-  const meanL = sumL / n;
-  const meanR = sumR / n, meanG = sumG / n, meanB = sumB / n;
+  var meanL = sumL / n;
+  var meanR = sumR / n, meanG = sumG / n, meanB = sumB / n;
 
-  // White balance estimate: gray-world assumption
-  const rgMean = (meanR + meanG + meanB) / 3;
-  const wbDev = Math.max(
+  var rgMean = (meanR + meanG + meanB) / 3;
+  var wbDev = Math.max(
     Math.abs(meanR - rgMean),
     Math.abs(meanG - rgMean),
     Math.abs(meanB - rgMean)
   );
 
-  // Sharpness via simple edge energy (Sobel-like on downsampled)
-  let edge = 0;
-  const w = imgData.width;
-  for (let y = 1; y < imgData.height - 1; y++) {
-    for (let x = 1; x < w - 1; x++) {
-      const i = (y * w + x) * 4;
-      const c = d[i];
-      const r_ = d[i + 4];
-      const b_ = d[i + w * 4];
+  var edge = 0;
+  var w = imgData.width;
+  for (var y = 1; y < imgData.height - 1; y++) {
+    for (var x = 1; x < w - 1; x++) {
+      var ii = (y * w + x) * 4;
+      var c = d[ii];
+      var r_ = d[ii + 4];
+      var b_ = d[ii + w * 4];
       edge += Math.abs(c - r_) + Math.abs(c - b_);
     }
   }
-  const sharpness = edge / n;
+  var sharpness = edge / n;
 
-  // Stability: difference from last frame luminance
-  const lumDiff = Math.abs(meanL - lastLum);
+  var lumDiff = Math.abs(meanL - lastLum);
   lastLum = meanL;
   if (lumDiff < 2) stableFrames++; else stableFrames = 0;
 
-  // Clip warning - too many pixels at extremes
-  const clipped = (histL[0] + histL[9]) / n;
+  var clipped = (histL[0] + histL[9]) / n;
 
   return {
     luminance: meanL,
     lumGood: meanL > 80 && meanL < 210,
     wbDeviation: wbDev,
     wbGood: wbDev < 18,
-    sharpness,
-    sharpGood: sharpness > 8,
+    sharpness: sharpness,
+    sharpGood: sharpness > 4,
     stable: stableFrames > 15,
-    clipped,
+    clipped: clipped,
     clipGood: clipped < 0.15
   };
 }
 
 function updateQualityHUD(q) {
-  const hLum = document.getElementById('hudLum');
-  const hStab = document.getElementById('hudStability');
-  const hWB = document.getElementById('hudWB');
-  const hFoc = document.getElementById('hudFocus');
+  var hLum = document.getElementById('hudLum');
+  var hStab = document.getElementById('hudStability');
+  var hWB = document.getElementById('hudWB');
+  var hFoc = document.getElementById('hudFocus');
 
-  // Luminance
   hLum.className = 'hud-chip ' + (q.lumGood && q.clipGood ? 'good' : (q.luminance < 60 || q.luminance > 230 ? 'bad' : 'warn'));
   hLum.querySelector('.value').textContent =
     q.luminance < 60 ? 'Dunkel' :
     q.luminance > 230 ? 'Überbel.' :
     q.clipGood ? 'OK' : 'Clip';
 
-  // Stability
   hStab.className = 'hud-chip ' + (q.stable ? 'good' : 'warn');
   hStab.querySelector('.value').textContent = q.stable ? 'Stabil' : 'Halten';
 
-  // White balance
   hWB.className = 'hud-chip ' + (q.wbGood ? 'good' : 'warn');
   hWB.querySelector('.value').textContent = q.wbGood ? 'OK' : 'Farbst.';
 
-  // Focus / sharpness
   hFoc.className = 'hud-chip ' + (q.sharpGood ? 'good' : 'warn');
   hFoc.querySelector('.value').textContent = q.sharpGood ? 'Scharf' : 'Unscharf';
 
-  // Update overall status + shutter enabled
-  const allGood = q.lumGood && q.clipGood && q.wbGood && q.sharpGood && q.stable;
+  var allGood = q.lumGood && q.clipGood && q.wbGood && q.sharpGood && q.stable;
   if (allGood) {
     camStatus.classList.add('ready');
     camStatusMsg.textContent = 'Bereit — Auslöser drücken';
@@ -1366,44 +1825,43 @@ function updateQualityHUD(q) {
     scaleGuide.classList.add('locked');
   } else {
     camStatus.classList.remove('ready');
-    shutter.disabled = false; // still allow override
+    shutter.disabled = false;
     shutter.classList.remove('ready');
     stripGuide.classList.remove('locked');
     padGuide.classList.remove('locked');
     scaleGuide.classList.remove('locked');
 
-    const issues = [];
-    if (!q.lumGood) issues.push(q.luminance < 80 ? 'mehr Licht' : 'weniger Licht');
+    var issues = [];
+    if (!q.lumGood) issues.push(q.luminance < 80 ? 'Mehr Licht nötig' : 'Zu hell — weniger Licht');
     if (!q.clipGood) issues.push('Überbelichtung');
     if (!q.wbGood) issues.push('Farbstich erkannt');
-    if (!q.sharpGood) issues.push('näher & scharfstellen');
+    if (!q.sharpGood) issues.push('Näher & scharfstellen');
     if (!q.stable) issues.push('Gerät ruhig halten');
     camStatusMsg.textContent = issues.length ? issues[0] : 'Ausrichten';
   }
 }
 
-/* =======================================================
-   AUFNAHME + ANALYSE
-======================================================= */
-const captureCanvas = document.createElement('canvas');
-const captureCtx = captureCanvas.getContext('2d', { willReadFrequently: true });
+/* ===== Capture + analyze ===== */
+var captureCanvas = document.createElement('canvas');
+var captureCtx = captureCanvas.getContext('2d');
 
 function captureAndAnalyze() {
-  // Flash effect
-  document.getElementById('captureFlash').classList.add('flash');
-  setTimeout(() => document.getElementById('captureFlash').classList.remove('flash'), 400);
+  if (!cameraActive || !video.videoWidth) return;
 
-  // Capture current frame
+  document.getElementById('captureFlash').classList.add('flash');
+  setTimeout(function() {
+    document.getElementById('captureFlash').classList.remove('flash');
+  }, 400);
+
   captureCanvas.width = video.videoWidth;
   captureCanvas.height = video.videoHeight;
   captureCtx.drawImage(video, 0, 0);
 
-  // Show analyzing overlay
-  const analyzing = document.getElementById('analyzing');
-  const stepEl = document.getElementById('analyzingStep');
+  var analyzing = document.getElementById('analyzing');
+  var stepEl = document.getElementById('analyzingStep');
   analyzing.classList.add('active');
 
-  const steps = [
+  var steps = [
     '[1/6] Region of Interest lokalisieren',
     '[2/6] Weißabgleich-Kalibrierung',
     '[3/6] Farbraum-Transformation sRGB → Lab',
@@ -1411,84 +1869,92 @@ function captureAndAnalyze() {
     '[5/6] ΔE-Distanzen berechnen',
     '[6/6] Interpolation zwischen Stützstellen'
   ];
-  let i = 0;
-  stepEl.innerHTML = `<span>${steps[0]}</span>`;
-  const stepTimer = setInterval(() => {
+  var i = 0;
+  stepEl.textContent = steps[0];
+  var stepTimer = setInterval(function() {
     i++;
-    if (i < steps.length) stepEl.innerHTML = `<span>${steps[i]}</span>`;
+    if (i < steps.length) stepEl.textContent = steps[i];
     else clearInterval(stepTimer);
   }, 200);
 
-  // Run analysis after brief delay (let UI paint)
-  setTimeout(() => {
+  setTimeout(function() {
     try {
-      const result = analyzeImage(captureCanvas);
+      var result = analyzeImage(captureCanvas);
       clearInterval(stepTimer);
       analyzing.classList.remove('active');
       showResult(result);
     } catch (err) {
-      console.error(err);
+      console.error('Analysis error:', err);
       clearInterval(stepTimer);
       analyzing.classList.remove('active');
-      showError('Analyse fehlgeschlagen', 'Das Bild konnte nicht ausgewertet werden. Bitte erneut versuchen und darauf achten, dass Teststreifen und Farbskala vollständig und scharf zu sehen sind.');
+      showError(
+        'Analyse fehlgeschlagen',
+        'Das Bild konnte nicht ausgewertet werden. Bitte erneut versuchen und darauf achten, dass Teststreifen und Farbskala vollständig und scharf zu sehen sind.'
+      );
     }
   }, 1400);
 }
 
-/* =======================================================
-   KERNANALYSE
-   Der User platziert den Streifen oben (15%–85% x, 25%–37% y im Bild)
-   und die Original-Farbskala darunter (15%–85% x, 55%–69% y).
-   Wir analysieren die Reaktionszone und extrahieren die 7 Felder der
-   abgebildeten Skala zum Live-Weißabgleich.
-======================================================= */
+/* ===== Core analysis (object-fit: cover aware) ===== */
 function analyzeImage(canvas) {
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
+  var ctx = canvas.getContext('2d');
+  var vW = canvas.width, vH = canvas.height;
 
-  // --- 1. Region of Interest: Reaktionsfeld am Teststreifen ---
-  // Streifen: y = 25% bis 37% des Bildes
-  // Reaktionsfeld: zentriert bei x ≈ 23%, Breite ~10%
-  const padX = Math.round(W * 0.18);
-  const padY = Math.round(H * 0.27);
-  const padW = Math.round(W * 0.10);
-  const padH = Math.round(H * 0.08);
-  const padData = ctx.getImageData(padX, padY, padW, padH);
+  var containerRect = document.querySelector('.camera-container').getBoundingClientRect();
+  var cW = containerRect.width, cH = containerRect.height;
 
-  // --- 2. Robuster Median des Reaktionsfelds (Ausreißer-resistent) ---
-  const padColor = extractMedianColor(padData);
+  var videoAspect = vW / vH;
+  var containerAspect = cW / cH;
 
-  // --- 3. Live-Skala aus Bild extrahieren für Weißabgleich ---
-  // Skala: y = 55% bis 69%, 7 Felder über x 15%–85%
-  const scaleY = Math.round(H * 0.58);
-  const scaleH = Math.round(H * 0.08);
-  const scaleX0 = Math.round(W * 0.17);
-  const scaleX1 = Math.round(W * 0.83);
-  const liveScale = [];
-  for (let k = 0; k < 7; k++) {
-    const cx = scaleX0 + Math.round((scaleX1 - scaleX0) * (k + 0.5) / 7);
-    const sx = cx - Math.round(W * 0.03);
-    const sw = Math.round(W * 0.06);
-    const sdata = ctx.getImageData(sx, scaleY, sw, scaleH);
+  var visibleX = 0, visibleY = 0, visibleW = vW, visibleH = vH;
+
+  if (videoAspect > containerAspect) {
+    visibleW = vH * containerAspect;
+    visibleX = (vW - visibleW) / 2;
+  } else {
+    visibleH = vW / containerAspect;
+    visibleY = (vH - visibleH) / 2;
+  }
+
+  var padX = Math.round(visibleX + visibleW * 0.18);
+  var padY = Math.round(visibleY + visibleH * 0.27);
+  var padW = Math.round(visibleW * 0.10);
+  var padH = Math.round(visibleH * 0.08);
+
+  var scaleY = Math.round(visibleY + visibleH * 0.58);
+  var scaleH = Math.round(visibleH * 0.08);
+  var scaleX0 = Math.round(visibleX + visibleW * 0.17);
+  var scaleX1 = Math.round(visibleX + visibleW * 0.83);
+
+  padX = Math.max(0, Math.min(padX, vW - padW));
+  padY = Math.max(0, Math.min(padY, vH - padH));
+  scaleY = Math.max(0, Math.min(scaleY, vH - scaleH));
+
+  var padData = ctx.getImageData(padX, padY, padW, padH);
+  var padColor = extractMedianColor(padData);
+
+  var liveScale = [];
+  for (var k = 0; k < 7; k++) {
+    var cx = scaleX0 + Math.round((scaleX1 - scaleX0) * (k + 0.5) / 7);
+    var sw = Math.max(10, Math.round(visibleW * 0.06));
+    var sx = Math.max(0, cx - Math.round(sw / 2));
+    var sxClamped = Math.min(sx, vW - sw);
+    var sdata = ctx.getImageData(sxClamped, scaleY, sw, scaleH);
     liveScale.push(extractMedianColor(sdata));
   }
 
-  // --- 4. Weißabgleichs-Korrektur ---
-  // Wir korrigieren auf Basis des 0-mg/L-Feldes (fast weiß) wenn plausibel
-  let corrected = padColor;
-  let wbCorrection = null;
+  var corrected = padColor;
+  var wbCorrection = null;
   if (liveScale[0]) {
-    const refWhite = REFERENCE[0].rgb;
-    const measuredWhite = liveScale[0];
-    // Gain für jeden Kanal
-    const gain = [
+    var refWhite = REFERENCE[0].rgb;
+    var measuredWhite = liveScale[0];
+    var gain = [
       refWhite[0] / Math.max(1, measuredWhite[0]),
       refWhite[1] / Math.max(1, measuredWhite[1]),
       refWhite[2] / Math.max(1, measuredWhite[2])
     ];
-    // Nur anwenden wenn plausibel (kein Extrem)
-    const maxGain = Math.max(...gain);
-    const minGain = Math.min(...gain);
+    var maxGain = Math.max(gain[0], gain[1], gain[2]);
+    var minGain = Math.min(gain[0], gain[1], gain[2]);
     if (maxGain < 2 && minGain > 0.5) {
       corrected = [
         Math.min(255, padColor[0] * gain[0]),
@@ -1499,36 +1965,31 @@ function analyzeImage(canvas) {
     }
   }
 
-  // --- 5. CIE Lab-Abstand zu jeder Referenz ---
-  const measuredLab = rgbToLab(...corrected);
-  const distances = REFERENCE.map(r => ({
-    value: r.value,
-    rgb: r.rgb,
-    lab: r.lab,
-    deltaE: deltaE(measuredLab, r.lab)
-  }));
-  distances.sort((a, b) => a.deltaE - b.deltaE);
+  var measuredLab = rgbToLab(corrected[0], corrected[1], corrected[2]);
+  var distances = REFERENCE.map(function(r) {
+    return {
+      value: r.value,
+      rgb: r.rgb,
+      lab: r.lab,
+      deltaE: deltaE(measuredLab, r.lab)
+    };
+  });
 
-  // --- 6. Interpolation zwischen den beiden nächsten Nachbarn ---
-  // Finde die beiden bennachbarten Referenzwerte, zwischen denen der Messwert
-  // liegt (nach Wert sortiert)
-  const byDelta = [...distances].sort((a, b) => a.deltaE - b.deltaE);
-  const closest = byDelta[0];
-  const secondClosest = byDelta[1];
+  var byDelta = distances.slice().sort(function(a, b) { return a.deltaE - b.deltaE; });
+  var closest = byDelta[0];
+  var secondClosest = byDelta[1];
 
-  // Nur interpolieren, wenn die beiden nächsten perzeptuell ähnlich weit entfernt sind
-  let estimate = closest.value;
-  let confidence = 0;
-  const d1 = byDelta[0].deltaE;
-  const d2 = byDelta[1].deltaE;
+  var estimate = closest.value;
+  var confidence = 0;
+  var d1 = byDelta[0].deltaE;
+  var d2 = byDelta[1].deltaE;
 
   if (d1 < 0.1) {
     estimate = closest.value;
     confidence = 0.99;
   } else if (d2 - d1 < d1 * 1.5) {
-    // Interpolation mit inversem Abstand
-    const w1 = 1 / (d1 + 0.01);
-    const w2 = 1 / (d2 + 0.01);
+    var w1 = 1 / (d1 + 0.01);
+    var w2 = 1 / (d2 + 0.01);
     estimate = (closest.value * w1 + secondClosest.value * w2) / (w1 + w2);
     confidence = Math.max(0.25, Math.min(0.95, 1 - d1 / 40));
   } else {
@@ -1536,145 +1997,136 @@ function analyzeImage(canvas) {
     confidence = Math.max(0.3, Math.min(0.95, 1 - d1 / 30));
   }
 
-  // Runden auf sinnvolle Präzision
-  let displayValue;
+  var displayValue;
   if (estimate < 1) displayValue = estimate.toFixed(2);
   else if (estimate < 10) displayValue = estimate.toFixed(1);
-  else displayValue = Math.round(estimate);
+  else displayValue = String(Math.round(estimate));
 
-  // --- 7. Bildqualitäts-Metriken der finalen Aufnahme ---
-  const qualityImg = ctx.getImageData(0, 0, Math.min(W, 400), Math.min(H, 400));
-  const q = assessQuality(qualityImg);
+  var qW = Math.min(vW, 400), qH = Math.min(vH, 400);
+  var qualityImg = ctx.getImageData(0, 0, qW, qH);
+  var q = assessQuality(qualityImg);
 
-  // Draw preview with ROI
   drawPreview(canvas, padX, padY, padW, padH, scaleX0, scaleY, scaleX1 - scaleX0, scaleH);
 
   return {
     value: displayValue,
     numericValue: estimate,
-    confidence,
-    measuredRgb: corrected.map(c => Math.round(c)),
-    measuredRaw: padColor.map(c => Math.round(c)),
-    measuredLab,
-    closest,
-    secondClosest,
-    allDistances: distances.sort((a,b) => a.value - b.value),
-    wbCorrection,
+    confidence: confidence,
+    measuredRgb: corrected.map(function(c) { return Math.round(c); }),
+    measuredRaw: padColor.map(function(c) { return Math.round(c); }),
+    measuredLab: measuredLab,
+    closest: closest,
+    secondClosest: secondClosest,
+    allDistances: distances.sort(function(a, b) { return a.value - b.value; }),
+    wbCorrection: wbCorrection,
     quality: q,
     deltaE: d1
   };
 }
 
-/* Median color (robuster als Mittelwert gegen Artefakte) */
 function extractMedianColor(imgData) {
-  const d = imgData.data;
-  const R = [], G = [], B = [];
-  for (let i = 0; i < d.length; i += 4) {
-    R.push(d[i]); G.push(d[i+1]); B.push(d[i+2]);
+  var d = imgData.data;
+  var n = d.length / 4;
+  if (n === 0) return [128, 128, 128];
+  var R = new Array(n), G = new Array(n), B = new Array(n);
+  for (var i = 0, j = 0; i < d.length; i += 4, j++) {
+    R[j] = d[i]; G[j] = d[i+1]; B[j] = d[i+2];
   }
-  R.sort((a,b) => a-b); G.sort((a,b) => a-b); B.sort((a,b) => a-b);
-  const mid = Math.floor(R.length / 2);
+  R.sort(function(a,b) { return a-b; });
+  G.sort(function(a,b) { return a-b; });
+  B.sort(function(a,b) { return a-b; });
+  var mid = Math.floor(n / 2);
   return [R[mid], G[mid], B[mid]];
 }
 
-/* Preview rendering */
 function drawPreview(source, padX, padY, padW, padH, scaleX, scaleY, scaleW, scaleH) {
-  const pv = document.getElementById('previewCanvas');
-  const pvCtx = pv.getContext('2d');
-  const targetW = 800;
-  const scale = targetW / source.width;
-  pv.width = targetW;
-  pv.height = source.height * scale;
+  var pv = document.getElementById('previewCanvas');
+  var pvCtx = pv.getContext('2d');
+  var maxW = Math.min(800, source.width);
+  var scale = maxW / source.width;
+  pv.width = maxW;
+  pv.height = Math.round(source.height * scale);
   pvCtx.drawImage(source, 0, 0, pv.width, pv.height);
-  // ROI markers
+
   pvCtx.strokeStyle = '#d4ff3a';
   pvCtx.lineWidth = 2;
   pvCtx.setLineDash([6, 4]);
   pvCtx.strokeRect(padX * scale, padY * scale, padW * scale, padH * scale);
+
   pvCtx.setLineDash([]);
   pvCtx.strokeStyle = 'rgba(212, 255, 58, 0.5)';
   pvCtx.lineWidth = 1;
   pvCtx.strokeRect(scaleX * scale, scaleY * scale, scaleW * scale, scaleH * scale);
-  // Label
+
   pvCtx.fillStyle = 'rgba(10, 14, 20, 0.85)';
   pvCtx.fillRect(padX * scale, padY * scale - 22, 50, 20);
   pvCtx.fillStyle = '#d4ff3a';
-  pvCtx.font = 'bold 11px monospace';
+  pvCtx.font = 'bold 11px -apple-system, monospace';
   pvCtx.fillText('ROI', padX * scale + 4, padY * scale - 7);
 }
 
-/* =======================================================
-   ERGEBNIS-ANZEIGE
-======================================================= */
+/* ===== Result display ===== */
 function showResult(r) {
-  // Switch views
   document.getElementById('cameraView').classList.remove('active');
   stopCamera();
   document.getElementById('startView').classList.remove('active');
   document.getElementById('resultView').classList.add('active');
 
-  // Update status pill
-  document.getElementById('statusPill').textContent = '● Ergebnis';
+  var mainEl = document.querySelector('main');
+  if (mainEl) mainEl.scrollTop = 0;
 
-  // Value
+  document.getElementById('statusPill').textContent = '● Ergebnis';
   document.getElementById('resultValue').textContent = r.value;
 
-  // Confidence
-  const confPct = Math.round(r.confidence * 100);
-  document.getElementById('confFill').style.width = confPct + '%';
+  var confPct = Math.round(r.confidence * 100);
+  var confFill = document.getElementById('confFill');
+  confFill.style.width = confPct + '%';
   document.getElementById('confText').textContent = confPct + '%';
-  document.getElementById('confFill').style.background =
-    confPct > 80 ? 'var(--success)' :
-    confPct > 55 ? 'var(--warning)' : 'var(--danger)';
+  confFill.style.backgroundColor =
+    confPct > 80 ? '#4ade80' :
+    confPct > 55 ? '#ffb84d' : '#ff5b5b';
 
-  // Range interpretation
-  const rangeEl = document.getElementById('resultRange');
+  var rangeEl = document.getElementById('resultRange');
   if (r.numericValue < 2) {
-    rangeEl.innerHTML = `Unterhalb der <strong>Nachweisgrenze</strong> (2 mg/L)`;
+    rangeEl.innerHTML = 'Unterhalb der <strong>Nachweisgrenze</strong> (2 mg/L)';
   } else if (r.numericValue > 80) {
-    rangeEl.innerHTML = `<strong>Oberhalb</strong> des Messbereichs — Probe verdünnen`;
+    rangeEl.innerHTML = '<strong>Oberhalb</strong> des Messbereichs — Probe verdünnen';
   } else {
-    rangeEl.innerHTML = `Messbereich <strong>0 – 80 mg/L NO₂⁻</strong>`;
+    rangeEl.innerHTML = 'Messbereich <strong>0 – 80 mg/L NO₂⁻</strong>';
   }
 
-  // Match marker position on scale
-  const pos = positionOnScale(r.numericValue);
+  var pos = positionOnScale(r.numericValue);
   document.getElementById('matchMarker').style.left = pos + '%';
 
-  // Color swatches
   document.getElementById('swatchMeasured').style.backgroundColor =
-    `rgb(${r.measuredRgb.join(',')})`;
+    'rgb(' + r.measuredRgb.join(',') + ')';
   document.getElementById('swatchReference').style.backgroundColor =
-    `rgb(${r.closest.rgb.join(',')})`;
+    'rgb(' + r.closest.rgb.join(',') + ')';
 
-  // Metrics
-  const q = r.quality;
+  var q = r.quality;
   document.getElementById('mLum').innerHTML =
     Math.round(q.luminance) + ' <span class="secondary">/255</span>';
   document.getElementById('mWB').innerHTML =
     (r.wbCorrection ? 'korrigiert' : 'neutral') +
-    ` <span class="secondary">Δ${Math.round(q.wbDeviation)}</span>`;
+    ' <span class="secondary">Δ' + Math.round(q.wbDeviation) + '</span>';
   document.getElementById('mSharp').innerHTML =
     Math.round(q.sharpness) + ' <span class="secondary">σ²</span>';
   document.getElementById('mDeltaE').innerHTML =
     r.deltaE.toFixed(1) + ' <span class="secondary">ΔE*</span>';
 
-  // Interpretation
-  const interp = interpretResult(r);
+  var interp = interpretResult(r);
   document.getElementById('interpretText').innerHTML = interp.html;
   document.getElementById('interpretBox').style.borderLeftColor = interp.color;
 }
 
 function positionOnScale(val) {
-  // 7 cells, each takes 1/7 = 14.28% width
-  // Index of nearest value
-  const cellW = 100 / 7;
+  var cellW = 100 / 7;
   if (val <= REFERENCE[0].value) return cellW / 2;
   if (val >= REFERENCE[REFERENCE.length - 1].value) return 100 - cellW / 2;
 
-  for (let i = 0; i < REFERENCE.length - 1; i++) {
+  for (var i = 0; i < REFERENCE.length - 1; i++) {
     if (val >= REFERENCE[i].value && val <= REFERENCE[i+1].value) {
-      const f = (val - REFERENCE[i].value) / (REFERENCE[i+1].value - REFERENCE[i].value);
+      var f = (val - REFERENCE[i].value) / (REFERENCE[i+1].value - REFERENCE[i].value);
       return (i + 0.5 + f) * cellW;
     }
   }
@@ -1682,110 +2134,200 @@ function positionOnScale(val) {
 }
 
 function interpretResult(r) {
-  const v = r.numericValue;
-  let level, text, color;
+  var v = r.numericValue;
+  var level, text, color;
 
   if (v < 0.5) {
     level = 'unbedenklich';
-    text = `Nitrit-Konzentration <strong>unterhalb der Nachweisgrenze</strong> (&lt;2 mg/L). Die Probe zeigt keine nennenswerte Nitrit-Belastung.`;
-    color = 'var(--success)';
+    text = 'Nitrit-Konzentration <strong>unterhalb der Nachweisgrenze</strong> (&lt;2 mg/L). Die Probe zeigt keine nennenswerte Nitrit-Belastung.';
+    color = '#4ade80';
   } else if (v < 5) {
     level = 'gering';
-    text = `<strong>Spurenbelastung</strong> — typisch für leicht belastete Oberflächen- oder Brauchwässer. Trinkwasser-Grenzwert (0,5 mg/L) bereits überschritten — nicht für Trinkwasser-Zwecke geeignet.`;
-    color = 'var(--warning)';
+    text = '<strong>Spurenbelastung</strong> — typisch für leicht belastete Oberflächen- oder Brauchwässer. Trinkwasser-Grenzwert (0,5 mg/L) bereits überschritten — nicht für Trinkwasser-Zwecke geeignet.';
+    color = '#ffb84d';
   } else if (v < 20) {
     level = 'erhöht';
-    text = `<strong>Erhöhte Belastung</strong> — möglicher Indikator für organische Verunreinigung, biologische Aktivität oder unvollständige Nitrifikation. Für Trink- und Prozesswasser <strong>nicht geeignet</strong>.`;
-    color = 'var(--warning)';
+    text = '<strong>Erhöhte Belastung</strong> — möglicher Indikator für organische Verunreinigung, biologische Aktivität oder unvollständige Nitrifikation. Für Trink- und Prozesswasser <strong>nicht geeignet</strong>.';
+    color = '#ffb84d';
   } else if (v < 50) {
     level = 'hoch';
-    text = `<strong>Deutliche Nitrit-Belastung</strong>. In Aquarienwasser akut toxisch für Fische. Hinweis auf biologischen Prozessausfall oder frische organische Kontamination.`;
-    color = 'var(--danger)';
+    text = '<strong>Deutliche Nitrit-Belastung</strong>. In Aquarienwasser akut toxisch für Fische. Hinweis auf biologischen Prozessausfall oder frische organische Kontamination.';
+    color = '#ff5b5b';
   } else {
     level = 'sehr hoch';
-    text = `<strong>Sehr hohe Konzentration</strong>. Probe für die meisten Anwendungen (außer technische Prozesse) <strong>ungeeignet</strong>. Bei Messwerten nahe 80 mg/L ggf. Verdünnung der Probe und Wiederholung empfehlenswert — der Test ist nach oben begrenzt.`;
-    color = 'var(--danger)';
+    text = '<strong>Sehr hohe Konzentration</strong>. Probe für die meisten Anwendungen (außer technische Prozesse) <strong>ungeeignet</strong>. Bei Messwerten nahe 80 mg/L ggf. Verdünnung der Probe und Wiederholung empfehlenswert — der Test ist nach oben begrenzt.';
+    color = '#ff5b5b';
   }
 
-  let html = `<p>Kategorisierung: <span class="level">${level}</span>. ${text}</p>`;
+  var html = '<p>Kategorisierung: <span class="level">' + level + '</span>. ' + text + '</p>';
 
-  // Add quality caveats
-  const warnings = [];
+  var warnings = [];
   if (r.confidence < 0.5) warnings.push('Niedrige Konfidenz — Messung unter besseren Lichtbedingungen wiederholen');
   if (r.deltaE > 15) warnings.push('Große Farbraum-Distanz zur nächsten Referenz — ggf. Störsubstanzen in der Probe');
   if (!r.quality.wbGood) warnings.push('Leichter Farbstich im Bild — Ergebnis kann verschoben sein');
   if (!r.quality.lumGood) warnings.push('Suboptimale Belichtung — Ergebnis mit Vorsicht interpretieren');
 
   if (warnings.length) {
-    html += `<p style="font-size:11px; color: var(--text-dim);">⚠ ${warnings.join(' · ')}</p>`;
+    html += '<p style="font-size:11px; color: var(--text-dim);">⚠ ' + warnings.join(' · ') + '</p>';
   }
 
-  return { html, color };
+  return { html: html, color: color };
 }
 
-/* =======================================================
-   EVENT HANDLERS
-======================================================= */
-document.getElementById('btnStart').addEventListener('click', async () => {
+/* ===== Event handlers ===== */
+function bindTap(el, handler) {
+  if (!el) return;
+  el.addEventListener('click', handler);
+}
+
+bindTap(document.getElementById('btnStart'), function() {
   document.getElementById('startView').classList.remove('active');
   document.getElementById('cameraView').classList.add('active');
   document.getElementById('statusPill').textContent = '● Kamera';
-  await startCamera();
+  startCamera().then(function(ok) {
+    if (!ok) {
+      document.getElementById('cameraView').classList.remove('active');
+      document.getElementById('startView').classList.add('active');
+      document.getElementById('statusPill').textContent = '● Bereit';
+    }
+  });
 });
 
-document.getElementById('btnCancel').addEventListener('click', () => {
+bindTap(document.getElementById('btnCancel'), function() {
   stopCamera();
   document.getElementById('cameraView').classList.remove('active');
   document.getElementById('startView').classList.add('active');
   document.getElementById('statusPill').textContent = '● Bereit';
 });
 
-document.getElementById('btnShutter').addEventListener('click', () => {
+bindTap(document.getElementById('btnShutter'), function() {
   captureAndAnalyze();
 });
 
-document.getElementById('btnTorch').addEventListener('click', toggleTorch);
+/* Big, always-visible capture button (guaranteed tap target) */
+bindTap(bigCapture, function() {
+  captureAndAnalyze();
+});
 
-document.getElementById('btnAgain').addEventListener('click', async () => {
+/* Tap on video → focus (must use click, not touchstart, to get coords reliably) */
+video.addEventListener('click', handleVideoTap);
+
+/* Zoom slider */
+zoomSlider.addEventListener('input', handleZoomChange);
+zoomSlider.addEventListener('change', handleZoomChange);
+
+bindTap(btnTorch, toggleTorch);
+
+bindTap(document.getElementById('btnAgain'), function() {
   document.getElementById('resultView').classList.remove('active');
   document.getElementById('cameraView').classList.add('active');
   document.getElementById('statusPill').textContent = '● Kamera';
-  await startCamera();
+  startCamera().then(function(ok) {
+    if (!ok) {
+      document.getElementById('cameraView').classList.remove('active');
+      document.getElementById('startView').classList.add('active');
+      document.getElementById('statusPill').textContent = '● Bereit';
+    }
+  });
 });
 
-document.getElementById('btnExport').addEventListener('click', () => {
-  const value = document.getElementById('resultValue').textContent;
-  const timestamp = new Date().toISOString();
-  const data = {
-    timestamp,
+bindTap(document.getElementById('btnExport'), function() {
+  var value = document.getElementById('resultValue').textContent;
+  var timestamp = new Date().toISOString();
+  var data = {
+    timestamp: timestamp,
     device: 'Merckoquant 1.10007',
     parameter: 'NO2- (Nitrit)',
     value_mg_per_L: value,
     method: 'Kolorimetrisch / Smartphone-Auswertung',
     note: 'Halbquantitative Bestimmung, keine Laborreferenz'
   };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `no2_messung_${timestamp.slice(0,19).replace(/[:.]/g,'-')}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
+  var text = JSON.stringify(data, null, 2);
+  var fname = 'no2_messung_' + timestamp.slice(0,19).replace(/[:.]/g,'-') + '.json';
+
+  if (navigator.share && IS_IOS) {
+    try {
+      var file = new File([text], fname, { type: 'application/json' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({
+          files: [file],
+          title: 'NO₂ Messung',
+          text: 'Nitrit-Messergebnis: ' + value + ' mg/L'
+        }).catch(function() {
+          downloadFallback(text, fname);
+        });
+        return;
+      } else {
+        navigator.share({
+          title: 'NO₂ Messung',
+          text: 'Nitrit: ' + value + ' mg/L\n\n' + text
+        }).catch(function() {
+          downloadFallback(text, fname);
+        });
+        return;
+      }
+    } catch (e) {
+      // fall through to download
+    }
+  }
+  downloadFallback(text, fname);
 });
 
-document.getElementById('btnCloseModal').addEventListener('click', () => {
+function downloadFallback(text, fname) {
+  try {
+    var blob = new Blob([text], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = fname;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+  } catch (e) {
+    // iOS Safari may block download — open in new tab as last resort
+    var dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(text);
+    window.open(dataUri, '_blank');
+  }
+}
+
+bindTap(document.getElementById('btnCloseModal'), function() {
   document.getElementById('errorModal').classList.remove('active');
 });
 
 function showError(title, text) {
   document.getElementById('errorTitle').textContent = title;
-  document.getElementById('errorText').textContent = text;
+  document.getElementById('errorText').innerHTML = text;
   document.getElementById('errorModal').classList.add('active');
 }
 
-// Cleanup on page unload
-window.addEventListener('beforeunload', stopCamera);
+/* Cleanup on page unload / hide */
 window.addEventListener('pagehide', stopCamera);
+window.addEventListener('beforeunload', stopCamera);
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'hidden' && cameraActive) {
+    stopCamera();
+    if (document.getElementById('cameraView').classList.contains('active')) {
+      document.getElementById('cameraView').classList.remove('active');
+      document.getElementById('startView').classList.add('active');
+      document.getElementById('statusPill').textContent = '● Bereit';
+    }
+  }
+});
+
+/* Prevent iOS pinch-zoom on the app chrome */
+document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
+document.addEventListener('gesturechange', function(e) { e.preventDefault(); });
+
+/* Prevent iOS double-tap zoom (backup — meta viewport should handle it) */
+var lastTouchEnd = 0;
+document.addEventListener('touchend', function(e) {
+  var now = Date.now();
+  if (now - lastTouchEnd < 300) {
+    e.preventDefault();
+  }
+  lastTouchEnd = now;
+}, { passive: false });
 </script>
 </body>
 </html>
