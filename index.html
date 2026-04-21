@@ -1038,6 +1038,247 @@ header, footer, .camera-controls, .quality-hud, .camera-status, .btn, .ctrl-btn,
   -webkit-user-select: none;
   user-select: none;
 }
+
+/* ===== Calibration UI ===== */
+.cal-status {
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.cal-status .icon {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.cal-status.missing { border-color: var(--warning); background: rgba(255, 184, 77, 0.06); }
+.cal-status.missing .icon { background: var(--warning); animation: pulse 1.8s infinite; }
+.cal-status.ok { border-color: var(--success); background: rgba(74, 222, 128, 0.05); }
+.cal-status.ok .icon { background: var(--success); }
+.cal-status .info { flex: 1; font-size: 12px; line-height: 1.5; }
+.cal-status .title {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-faint);
+  margin-bottom: 2px;
+}
+.cal-status.ok .title { color: var(--success); }
+.cal-status.missing .title { color: var(--warning); }
+.cal-status .sub { color: var(--text-dim); font-size: 11px; }
+.cal-status .sub strong { color: var(--text); font-weight: 500; }
+
+/* Mode buttons (calibrate vs measure) */
+.mode-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+.mode-btn {
+  padding: 18px 14px;
+  border: 1px solid var(--border-bright);
+  background: var(--bg-elev);
+  color: var(--text);
+  font-family: var(--mono);
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 0;
+  min-height: 80px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.mode-btn:active { background: var(--bg-card); }
+.mode-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.mode-btn.primary {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+.mode-btn.primary:disabled {
+  background: var(--border);
+  color: var(--text-faint);
+  border-color: var(--border);
+}
+.mode-btn .num {
+  font-family: var(--serif);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  display: block;
+  margin-bottom: 6px;
+  color: var(--accent-dim);
+}
+.mode-btn.primary .num { color: var(--bg); opacity: 0.6; }
+.mode-btn .label {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  display: block;
+  margin-bottom: 4px;
+}
+.mode-btn .desc {
+  font-size: 10px;
+  color: var(--text-dim);
+  line-height: 1.4;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.mode-btn.primary .desc { color: var(--bg); opacity: 0.75; }
+
+/* Calibration confirmation view */
+.cal-confirm {
+  margin-bottom: 20px;
+}
+.cal-compare {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  border: 1px solid var(--border);
+  padding: 2px;
+  background: var(--bg-elev);
+  margin-bottom: 8px;
+}
+.cal-compare .cell {
+  aspect-ratio: 1/1.2;
+  min-height: 40px;
+  position: relative;
+}
+.cal-compare .cell .label {
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: rgba(0,0,0,0.7);
+  font-family: var(--mono);
+}
+.cal-legend {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+  margin-bottom: 10px;
+}
+.cal-legend .dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* Calibration instructions */
+.cal-instructions {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+.cal-instructions strong { color: var(--text); }
+
+/* Camera overlay: different guide for calibration vs measurement */
+.guide-calibration {
+  left: 8%;
+  right: 8%;
+  top: 38%;
+  height: 16%;
+  border: 2px dashed var(--accent);
+}
+.guide-calibration .label {
+  position: absolute;
+  top: -22px;
+  left: 0;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--accent);
+  background: rgba(0,0,0,0.6);
+  padding: 2px 6px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.guide-calibration .ticks {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  pointer-events: none;
+}
+.guide-calibration .ticks > div {
+  border-right: 1px dashed rgba(212, 255, 58, 0.4);
+}
+.guide-calibration .ticks > div:last-child { border-right: none; }
+.guide-calibration.locked { border-color: var(--success); border-style: solid; }
+.guide-calibration.locked .ticks > div { border-right-color: rgba(74, 222, 128, 0.4); }
+
+.guide-measure {
+  left: 30%;
+  right: 30%;
+  top: 42%;
+  height: 14%;
+  border: 2px dashed var(--accent);
+}
+.guide-measure .label {
+  position: absolute;
+  top: -22px;
+  left: 0;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--accent);
+  background: rgba(0,0,0,0.6);
+  padding: 2px 6px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.guide-measure .center-crosshair {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 24px;
+  height: 24px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.guide-measure .center-crosshair::before,
+.guide-measure .center-crosshair::after {
+  content: '';
+  position: absolute;
+  background: var(--accent);
+}
+.guide-measure .center-crosshair::before {
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  transform: translateX(-50%);
+}
+.guide-measure .center-crosshair::after {
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  transform: translateY(-50%);
+}
+.guide-measure.locked { border-color: var(--success); border-style: solid; }
 </style>
 </head>
 <body>
@@ -1130,9 +1371,74 @@ header, footer, .camera-controls, .quality-hud, .camera-status, .btn, .ctrl-btn,
         </ul>
       </div>
 
-      <button class="btn" id="btnStart" type="button">
-        Messung starten <span class="arrow">→</span>
-      </button>
+      <!-- Calibration status -->
+      <div class="section-title" style="margin-top:4px;">
+        <span>Kalibrierung</span>
+        <span class="unit" id="calUnit">Referenzskala</span>
+      </div>
+      <div class="cal-status missing" id="calStatus">
+        <div class="icon"></div>
+        <div class="info">
+          <div class="title" id="calTitle">Keine Kalibrierung</div>
+          <div class="sub" id="calSub">Vor der ersten Messung die Merckoquant-Farbskala fotografieren.</div>
+        </div>
+      </div>
+
+      <!-- Mode selector -->
+      <div class="mode-grid">
+        <button class="mode-btn" id="btnCalibrate" type="button">
+          <span class="num">Schritt 1</span>
+          <span class="label">Kalibrieren</span>
+          <span class="desc">Farbskala fotografieren</span>
+        </button>
+        <button class="mode-btn primary" id="btnMeasure" type="button" disabled>
+          <span class="num">Schritt 2</span>
+          <span class="label">Messen</span>
+          <span class="desc">Teststreifen auswerten</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- CALIBRATION CONFIRMATION VIEW -->
+    <section id="calibrationView" class="view">
+      <div class="hero" style="padding-top: 0;">
+        <h1>Kalibrierung <em>erfasst</em></h1>
+        <p>Bitte die gemessenen Farben prüfen. Die obere Reihe zeigt die aus deinem Foto extrahierten Farben, die untere Reihe die theoretische Merckoquant-Referenz.</p>
+      </div>
+
+      <div class="cal-confirm">
+        <div class="section-title">
+          <span>Gemessene Farbskala</span>
+          <span class="unit">aus Foto</span>
+        </div>
+        <div class="cal-compare" id="calMeasuredRow"></div>
+
+        <div class="section-title" style="margin-top: 14px;">
+          <span>Theoretische Referenz</span>
+          <span class="unit">Merckoquant</span>
+        </div>
+        <div class="cal-compare" id="calReferenceRow"></div>
+      </div>
+
+      <div class="cal-instructions">
+        <strong>Plausibilitätsprüfung:</strong><br>
+        Die Farben sollten von links (hell, 0 mg/L) nach rechts (dunkel, 80 mg/L) zunehmend violett-rot werden. Bei deutlich abweichenden Farben (z.&nbsp;B. Blau- oder Grünstich, nicht-monotone Verläufe) ist die Kalibrierung <strong>unbrauchbar</strong> — in dem Fall wiederholen.
+      </div>
+
+      <div class="interpretation" id="calQualityBox">
+        <h4>Kalibrier-Diagnose</h4>
+        <p id="calQualityText"></p>
+      </div>
+
+      <div class="preview-wrap">
+        <canvas id="calPreviewCanvas"></canvas>
+        <div class="preview-caption">Analysiertes Kalibrier-Bild · Felder markiert</div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn secondary" id="btnCalRedo" type="button">Wiederholen</button>
+        <button class="btn" id="btnCalAccept" type="button">Übernehmen</button>
+      </div>
     </section>
 
     <section id="resultView" class="view">
@@ -1227,12 +1533,18 @@ header, footer, .camera-controls, .quality-hud, .camera-status, .btn, .ctrl-btn,
     <video id="videoEl" autoplay playsinline muted webkit-playsinline x5-playsinline disablepictureinpicture></video>
 
     <div class="overlay-container">
-      <div class="guide-box guide-strip" id="stripGuide">
-        <span class="label">Teststreifen</span>
+      <!-- Calibration mode: wide strip guide with 7 tick marks -->
+      <div class="guide-box guide-calibration" id="guideCalibration" style="display:none;">
+        <span class="label">Farbskala · 7 Felder</span>
+        <div class="ticks">
+          <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+        </div>
       </div>
-      <div class="guide-box guide-pad" id="padGuide"></div>
-      <div class="guide-box guide-scale" id="scaleGuide">
-        <span class="label">Farbskala</span>
+
+      <!-- Measurement mode: small centered target for reaction pad -->
+      <div class="guide-box guide-measure" id="guideMeasure" style="display:none;">
+        <span class="label">Reaktionsfeld</span>
+        <div class="center-crosshair"></div>
       </div>
     </div>
 
@@ -1380,6 +1692,87 @@ REFERENCE.forEach(function(r) {
   r.lab = rgbToLab(r.rgb[0], r.rgb[1], r.rgb[2]);
 });
 
+/* ===== App mode state ===== */
+var MODE_CALIBRATE = 'calibrate';
+var MODE_MEASURE = 'measure';
+var currentMode = null; // set when camera opens
+
+/* ===== Calibration storage ===== */
+var CAL_KEY = 'no2_calibration_v1';
+var calibration = null; // { timestamp, measuredRgb: [[r,g,b]x7], measuredLab: [{L,a,b}x7], quality }
+
+function loadCalibration() {
+  try {
+    var raw = localStorage.getItem(CAL_KEY);
+    if (!raw) return null;
+    var parsed = JSON.parse(raw);
+    if (!parsed || !parsed.measuredLab || parsed.measuredLab.length !== 7) return null;
+    return parsed;
+  } catch (e) {
+    return null;
+  }
+}
+
+function saveCalibration(cal) {
+  try {
+    localStorage.setItem(CAL_KEY, JSON.stringify(cal));
+    return true;
+  } catch (e) {
+    console.warn('Calibration save failed:', e);
+    return false;
+  }
+}
+
+function clearCalibration() {
+  try { localStorage.removeItem(CAL_KEY); } catch (e) {}
+  calibration = null;
+  updateCalibrationStatusUI();
+}
+
+function formatCalAge(ts) {
+  var now = Date.now();
+  var diffMs = now - ts;
+  var mins = Math.round(diffMs / 60000);
+  if (mins < 1) return 'vor wenigen Sekunden';
+  if (mins < 60) return 'vor ' + mins + ' min';
+  var hrs = Math.round(mins / 60);
+  if (hrs < 24) return 'vor ' + hrs + ' h';
+  var days = Math.round(hrs / 24);
+  return 'vor ' + days + ' Tag' + (days === 1 ? '' : 'en');
+}
+
+function updateCalibrationStatusUI() {
+  var box = document.getElementById('calStatus');
+  var title = document.getElementById('calTitle');
+  var sub = document.getElementById('calSub');
+  var btnMeasure = document.getElementById('btnMeasure');
+  var btnCalibrate = document.getElementById('btnCalibrate');
+
+  if (calibration && calibration.timestamp) {
+    box.classList.remove('missing');
+    box.classList.add('ok');
+    title.textContent = 'Kalibrierung aktiv';
+    var age = formatCalAge(calibration.timestamp);
+    var d = new Date(calibration.timestamp);
+    var dateStr = d.toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+    sub.innerHTML = 'Erfasst ' + age + ' (<strong>' + dateStr + '</strong>). Bei neuen Lichtverhältnissen erneut kalibrieren.';
+    btnMeasure.disabled = false;
+    btnCalibrate.querySelector('.label').textContent = 'Neu kalibrieren';
+    btnCalibrate.querySelector('.desc').textContent = 'Farbskala erneut erfassen';
+  } else {
+    box.classList.remove('ok');
+    box.classList.add('missing');
+    title.textContent = 'Keine Kalibrierung';
+    sub.textContent = 'Vor der ersten Messung die Merckoquant-Farbskala fotografieren.';
+    btnMeasure.disabled = true;
+    btnCalibrate.querySelector('.label').textContent = 'Kalibrieren';
+    btnCalibrate.querySelector('.desc').textContent = 'Farbskala fotografieren';
+  }
+}
+
+// Load calibration on page init
+calibration = loadCalibration();
+
 /* ===== Render reference scales ===== */
 function renderScale(el) {
   el.innerHTML = '';
@@ -1394,6 +1787,9 @@ function renderScale(el) {
 renderScale(document.getElementById('refScale'));
 renderScale(document.getElementById('refScaleResult'));
 
+/* Initialize calibration status UI based on loaded calibration */
+updateCalibrationStatusUI();
+
 /* ===== Camera handling (iOS Safari compatible) ===== */
 var stream = null;
 var track = null;
@@ -1407,9 +1803,11 @@ var video = document.getElementById('videoEl');
 var shutter = document.getElementById('btnShutter');
 var camStatus = document.getElementById('camStatus');
 var camStatusMsg = document.getElementById('camStatusMsg');
-var stripGuide = document.getElementById('stripGuide');
-var padGuide = document.getElementById('padGuide');
-var scaleGuide = document.getElementById('scaleGuide');
+var stripGuide = null;
+var padGuide = null;
+var scaleGuide = null;
+var guideCalibration = document.getElementById('guideCalibration');
+var guideMeasure = document.getElementById('guideMeasure');
 var btnTorch = document.getElementById('btnTorch');
 var bigCapture = document.getElementById('bigCapture');
 var focusRing = document.getElementById('focusRing');
@@ -1815,21 +2213,20 @@ function updateQualityHUD(q) {
   hFoc.querySelector('.value').textContent = q.sharpGood ? 'Scharf' : 'Unscharf';
 
   var allGood = q.lumGood && q.clipGood && q.wbGood && q.sharpGood && q.stable;
+  var activeGuide = currentMode === MODE_CALIBRATE ? guideCalibration : guideMeasure;
   if (allGood) {
     camStatus.classList.add('ready');
-    camStatusMsg.textContent = 'Bereit — Auslöser drücken';
+    camStatusMsg.textContent = currentMode === MODE_CALIBRATE
+      ? 'Skala bündig im Rahmen — auslösen'
+      : 'Reaktionsfeld im Fadenkreuz — auslösen';
     shutter.disabled = false;
     shutter.classList.add('ready');
-    stripGuide.classList.add('locked');
-    padGuide.classList.add('locked');
-    scaleGuide.classList.add('locked');
+    if (activeGuide) activeGuide.classList.add('locked');
   } else {
     camStatus.classList.remove('ready');
     shutter.disabled = false;
     shutter.classList.remove('ready');
-    stripGuide.classList.remove('locked');
-    padGuide.classList.remove('locked');
-    scaleGuide.classList.remove('locked');
+    if (activeGuide) activeGuide.classList.remove('locked');
 
     var issues = [];
     if (!q.lumGood) issues.push(q.luminance < 80 ? 'Mehr Licht nötig' : 'Zu hell — weniger Licht');
@@ -1861,13 +2258,18 @@ function captureAndAnalyze() {
   var stepEl = document.getElementById('analyzingStep');
   analyzing.classList.add('active');
 
-  var steps = [
-    '[1/6] Region of Interest lokalisieren',
-    '[2/6] Weißabgleich-Kalibrierung',
-    '[3/6] Farbraum-Transformation sRGB → Lab',
-    '[4/6] Referenzskala extrahieren',
-    '[5/6] ΔE-Distanzen berechnen',
-    '[6/6] Interpolation zwischen Stützstellen'
+  var steps = currentMode === MODE_CALIBRATE ? [
+    '[1/5] Skalen-Region lokalisieren',
+    '[2/5] 7 Felder segmentieren',
+    '[3/5] Median-Farbwerte extrahieren',
+    '[4/5] Lab-Farbraum-Transformation',
+    '[5/5] Plausibilitätsprüfung'
+  ] : [
+    '[1/5] Reaktionsfeld lokalisieren',
+    '[2/5] Farbmessung',
+    '[3/5] Lab-Farbraum-Transformation',
+    '[4/5] Vergleich mit Kalibrierung',
+    '[5/5] Konzentration interpolieren'
   ];
   var i = 0;
   stepEl.textContent = steps[0];
@@ -1879,35 +2281,40 @@ function captureAndAnalyze() {
 
   setTimeout(function() {
     try {
-      var result = analyzeImage(captureCanvas);
-      clearInterval(stepTimer);
-      analyzing.classList.remove('active');
-      showResult(result);
+      if (currentMode === MODE_CALIBRATE) {
+        var calResult = analyzeCalibration(captureCanvas);
+        clearInterval(stepTimer);
+        analyzing.classList.remove('active');
+        showCalibrationResult(calResult);
+      } else {
+        var result = analyzeMeasurement(captureCanvas);
+        clearInterval(stepTimer);
+        analyzing.classList.remove('active');
+        showResult(result);
+      }
     } catch (err) {
       console.error('Analysis error:', err);
       clearInterval(stepTimer);
       analyzing.classList.remove('active');
       showError(
         'Analyse fehlgeschlagen',
-        'Das Bild konnte nicht ausgewertet werden. Bitte erneut versuchen und darauf achten, dass Teststreifen und Farbskala vollständig und scharf zu sehen sind.'
+        'Das Bild konnte nicht ausgewertet werden. ' +
+        (currentMode === MODE_CALIBRATE
+          ? 'Bitte die Farbskala vollständig und scharf in den Rahmen bringen.'
+          : 'Bitte das Reaktionsfeld scharf und mittig im Fadenkreuz positionieren.')
       );
     }
   }, 1400);
 }
 
-/* ===== Core analysis (object-fit: cover aware) ===== */
-function analyzeImage(canvas) {
-  var ctx = canvas.getContext('2d');
+/* ===== Compute visible video area (object-fit: cover aware) ===== */
+function computeVisibleArea(canvas) {
   var vW = canvas.width, vH = canvas.height;
-
   var containerRect = document.querySelector('.camera-container').getBoundingClientRect();
   var cW = containerRect.width, cH = containerRect.height;
-
   var videoAspect = vW / vH;
   var containerAspect = cW / cH;
-
   var visibleX = 0, visibleY = 0, visibleW = vW, visibleH = vH;
-
   if (videoAspect > containerAspect) {
     visibleW = vH * containerAspect;
     visibleX = (vW - visibleW) / 2;
@@ -1915,86 +2322,211 @@ function analyzeImage(canvas) {
     visibleH = vW / containerAspect;
     visibleY = (vH - visibleH) / 2;
   }
+  return { x: visibleX, y: visibleY, w: visibleW, h: visibleH, vW: vW, vH: vH };
+}
 
-  var padX = Math.round(visibleX + visibleW * 0.18);
-  var padY = Math.round(visibleY + visibleH * 0.27);
-  var padW = Math.round(visibleW * 0.10);
-  var padH = Math.round(visibleH * 0.08);
+/* ===== CALIBRATION ANALYSIS =====
+   Segments the wide calibration guide into 7 equal horizontal cells
+   and measures median color from inner 70% of each cell.
+*/
+function analyzeCalibration(canvas) {
+  var ctx = canvas.getContext('2d');
+  var v = computeVisibleArea(canvas);
 
-  var scaleY = Math.round(visibleY + visibleH * 0.58);
-  var scaleH = Math.round(visibleH * 0.08);
-  var scaleX0 = Math.round(visibleX + visibleW * 0.17);
-  var scaleX1 = Math.round(visibleX + visibleW * 0.83);
+  // Calibration guide: left 8%, right 8%, top 38%, height 16%
+  var guideX = v.x + v.w * 0.08;
+  var guideW = v.w * 0.84;
+  var guideY = v.y + v.h * 0.38;
+  var guideH = v.h * 0.16;
 
-  padX = Math.max(0, Math.min(padX, vW - padW));
-  padY = Math.max(0, Math.min(padY, vH - padH));
-  scaleY = Math.max(0, Math.min(scaleY, vH - scaleH));
+  var cellW = guideW / 7;
+  // Sample from the center 60% horizontally and 60% vertically of each cell
+  // to avoid borders between fields
+  var sampleInsetX = cellW * 0.2;
+  var sampleW = cellW * 0.6;
+  var sampleInsetY = guideH * 0.2;
+  var sampleH = guideH * 0.6;
 
-  var padData = ctx.getImageData(padX, padY, padW, padH);
-  var padColor = extractMedianColor(padData);
+  var measuredRgb = [];
+  var measuredLab = [];
 
-  var liveScale = [];
   for (var k = 0; k < 7; k++) {
-    var cx = scaleX0 + Math.round((scaleX1 - scaleX0) * (k + 0.5) / 7);
-    var sw = Math.max(10, Math.round(visibleW * 0.06));
-    var sx = Math.max(0, cx - Math.round(sw / 2));
-    var sxClamped = Math.min(sx, vW - sw);
-    var sdata = ctx.getImageData(sxClamped, scaleY, sw, scaleH);
-    liveScale.push(extractMedianColor(sdata));
+    var sx = Math.round(guideX + k * cellW + sampleInsetX);
+    var sy = Math.round(guideY + sampleInsetY);
+    var sw = Math.max(8, Math.round(sampleW));
+    var sh = Math.max(8, Math.round(sampleH));
+
+    // Clamp to canvas
+    sx = Math.max(0, Math.min(sx, v.vW - sw));
+    sy = Math.max(0, Math.min(sy, v.vH - sh));
+
+    var data = ctx.getImageData(sx, sy, sw, sh);
+    var rgb = extractMedianColor(data);
+    measuredRgb.push(rgb);
+    measuredLab.push(rgbToLab(rgb[0], rgb[1], rgb[2]));
   }
 
-  var corrected = padColor;
-  var wbCorrection = null;
-  if (liveScale[0]) {
-    var refWhite = REFERENCE[0].rgb;
-    var measuredWhite = liveScale[0];
-    var gain = [
-      refWhite[0] / Math.max(1, measuredWhite[0]),
-      refWhite[1] / Math.max(1, measuredWhite[1]),
-      refWhite[2] / Math.max(1, measuredWhite[2])
-    ];
-    var maxGain = Math.max(gain[0], gain[1], gain[2]);
-    var minGain = Math.min(gain[0], gain[1], gain[2]);
-    if (maxGain < 2 && minGain > 0.5) {
-      corrected = [
-        Math.min(255, padColor[0] * gain[0]),
-        Math.min(255, padColor[1] * gain[1]),
-        Math.min(255, padColor[2] * gain[2])
-      ];
-      wbCorrection = gain;
+  // Quality checks on calibration
+  var diagnostics = diagnoseCalibration(measuredLab, measuredRgb);
+
+  // Draw preview with detected cells marked
+  drawCalibrationPreview(canvas, guideX, guideY, guideW, guideH, cellW,
+    sampleInsetX, sampleW, sampleInsetY, sampleH);
+
+  return {
+    timestamp: Date.now(),
+    measuredRgb: measuredRgb,
+    measuredLab: measuredLab,
+    diagnostics: diagnostics
+  };
+}
+
+function diagnoseCalibration(labs, rgbs) {
+  // Check 1: monotonic decrease in lightness L* (darker toward higher concentration)
+  var LValues = labs.map(function(l) { return l.L; });
+  var monotonic = true;
+  var maxAscent = 0;
+  for (var i = 1; i < LValues.length; i++) {
+    var delta = LValues[i-1] - LValues[i]; // expected positive (getting darker)
+    if (delta < -2) { // allow small noise
+      monotonic = false;
     }
+    if (-delta > maxAscent) maxAscent = -delta;
   }
 
-  var measuredLab = rgbToLab(corrected[0], corrected[1], corrected[2]);
-  var distances = REFERENCE.map(function(r) {
-    return {
-      value: r.value,
-      rgb: r.rgb,
-      lab: r.lab,
-      deltaE: deltaE(measuredLab, r.lab)
-    };
-  });
+  // Check 2: total dynamic range L* from field 0 to field 6
+  var totalRange = LValues[0] - LValues[6];
+
+  // Check 3: a* (red-green axis) should increase toward magenta (more red)
+  // then eventually drop again as it goes darker. Primary check: a* of field 6
+  // is positive (still in red half) and decently saturated
+  var a0 = labs[0].a, a6 = labs[6].a;
+
+  // Check 4: no extreme color cast — compare mean a* and b* of all fields
+  var meanA = 0, meanB = 0;
+  for (var j = 0; j < labs.length; j++) { meanA += labs[j].a; meanB += labs[j].b; }
+  meanA /= labs.length; meanB /= labs.length;
+
+  // Check 5: average delta E between consecutive fields should be > 5
+  // (otherwise fields not distinguishable)
+  var interFieldDeltaE = [];
+  for (var m = 1; m < labs.length; m++) {
+    interFieldDeltaE.push(deltaE(labs[m-1], labs[m]));
+  }
+  var avgStep = interFieldDeltaE.reduce(function(a,b) { return a+b; }, 0) / interFieldDeltaE.length;
+  var minStep = Math.min.apply(null, interFieldDeltaE);
+
+  var issues = [];
+  var warnings = [];
+
+  if (!monotonic) {
+    issues.push('Farbverlauf nicht monoton dunkler werdend — Skala vermutlich falsch ausgerichtet oder teilweise verdeckt');
+  }
+  if (totalRange < 20) {
+    issues.push('Zu geringer Dynamikumfang (ΔL* = ' + totalRange.toFixed(1) + ') — Bild vermutlich überbelichtet, unterbelichtet oder Skala nicht vollständig erfasst');
+  }
+  if (minStep < 2) {
+    issues.push('Manche Felder unterscheiden sich farblich kaum (min ΔE = ' + minStep.toFixed(1) + ') — Skala ggf. verzerrt im Bild');
+  }
+  if (avgStep < 5) {
+    warnings.push('Farbabstände zwischen Feldern klein (ø ΔE = ' + avgStep.toFixed(1) + ') — Messung weniger robust');
+  }
+  if (a6 < 5) {
+    warnings.push('Dunkles Feld wirkt ausgewaschen (a* = ' + a6.toFixed(1) + ') — möglicherweise Licht nicht ideal');
+  }
+
+  var score = 1.0;
+  if (!monotonic) score -= 0.5;
+  if (totalRange < 20) score -= 0.3;
+  if (minStep < 2) score -= 0.2;
+  if (avgStep < 5) score -= 0.1;
+  score = Math.max(0, score);
+
+  return {
+    monotonic: monotonic,
+    totalRange: totalRange,
+    avgStep: avgStep,
+    minStep: minStep,
+    issues: issues,
+    warnings: warnings,
+    score: score,
+    usable: issues.length === 0
+  };
+}
+
+/* ===== MEASUREMENT ANALYSIS =====
+   Measures the reaction pad at the centered crosshair and compares
+   against the user-specific calibration (in Lab space).
+*/
+function analyzeMeasurement(canvas) {
+  if (!calibration || !calibration.measuredLab || calibration.measuredLab.length !== 7) {
+    throw new Error('No calibration');
+  }
+
+  var ctx = canvas.getContext('2d');
+  var v = computeVisibleArea(canvas);
+
+  // Measurement guide: left 30%, right 30%, top 42%, height 14% — centered
+  var guideX = v.x + v.w * 0.30;
+  var guideY = v.y + v.h * 0.42;
+  var guideW = v.w * 0.40;
+  var guideH = v.h * 0.14;
+
+  // Sample the inner 50% of the guide to avoid strip edges
+  var sx = Math.round(guideX + guideW * 0.25);
+  var sy = Math.round(guideY + guideH * 0.25);
+  var sw = Math.max(20, Math.round(guideW * 0.5));
+  var sh = Math.max(20, Math.round(guideH * 0.5));
+
+  sx = Math.max(0, Math.min(sx, v.vW - sw));
+  sy = Math.max(0, Math.min(sy, v.vH - sh));
+
+  var padData = ctx.getImageData(sx, sy, sw, sh);
+  var padRgb = extractMedianColor(padData);
+  var padLab = rgbToLab(padRgb[0], padRgb[1], padRgb[2]);
+
+  // Compute ΔE against each of the 7 calibrated fields
+  var distances = [];
+  for (var k = 0; k < 7; k++) {
+    var refLab = calibration.measuredLab[k];
+    // Rebuild the lab object structure (JSON may have serialized it)
+    var labObj = { L: refLab.L, a: refLab.a, b: refLab.b };
+    distances.push({
+      value: REFERENCE[k].value,
+      rgb: calibration.measuredRgb[k],
+      theoreticalRgb: REFERENCE[k].rgb,
+      lab: labObj,
+      deltaE: deltaE(padLab, labObj)
+    });
+  }
 
   var byDelta = distances.slice().sort(function(a, b) { return a.deltaE - b.deltaE; });
   var closest = byDelta[0];
   var secondClosest = byDelta[1];
 
-  var estimate = closest.value;
-  var confidence = 0;
+  // Interpolate between two nearest neighbors — but only if they are actual
+  // neighbors on the scale (i.e. adjacent indices)
+  var estimate;
+  var confidence;
   var d1 = byDelta[0].deltaE;
   var d2 = byDelta[1].deltaE;
 
-  if (d1 < 0.1) {
+  var idx1 = REFERENCE.findIndex(function(r) { return r.value === closest.value; });
+  var idx2 = REFERENCE.findIndex(function(r) { return r.value === secondClosest.value; });
+  var adjacent = Math.abs(idx1 - idx2) === 1;
+
+  if (d1 < 0.5) {
     estimate = closest.value;
-    confidence = 0.99;
-  } else if (d2 - d1 < d1 * 1.5) {
+    confidence = 0.98;
+  } else if (adjacent && (d2 - d1) < d1 * 2.0) {
+    // Inverse-distance weighted interpolation, only between adjacent fields
     var w1 = 1 / (d1 + 0.01);
     var w2 = 1 / (d2 + 0.01);
     estimate = (closest.value * w1 + secondClosest.value * w2) / (w1 + w2);
-    confidence = Math.max(0.25, Math.min(0.95, 1 - d1 / 40));
+    confidence = Math.max(0.35, Math.min(0.95, 1 - d1 / 30));
   } else {
     estimate = closest.value;
-    confidence = Math.max(0.3, Math.min(0.95, 1 - d1 / 30));
+    confidence = Math.max(0.4, Math.min(0.95, 1 - d1 / 25));
   }
 
   var displayValue;
@@ -2002,25 +2534,25 @@ function analyzeImage(canvas) {
   else if (estimate < 10) displayValue = estimate.toFixed(1);
   else displayValue = String(Math.round(estimate));
 
-  var qW = Math.min(vW, 400), qH = Math.min(vH, 400);
+  // Assess image quality for diagnostics
+  var qW = Math.min(v.vW, 400), qH = Math.min(v.vH, 400);
   var qualityImg = ctx.getImageData(0, 0, qW, qH);
   var q = assessQuality(qualityImg);
 
-  drawPreview(canvas, padX, padY, padW, padH, scaleX0, scaleY, scaleX1 - scaleX0, scaleH);
+  drawMeasurementPreview(canvas, sx, sy, sw, sh, guideX, guideY, guideW, guideH);
 
   return {
     value: displayValue,
     numericValue: estimate,
     confidence: confidence,
-    measuredRgb: corrected.map(function(c) { return Math.round(c); }),
-    measuredRaw: padColor.map(function(c) { return Math.round(c); }),
-    measuredLab: measuredLab,
+    measuredRgb: padRgb,
+    measuredLab: padLab,
     closest: closest,
     secondClosest: secondClosest,
     allDistances: distances.sort(function(a, b) { return a.value - b.value; }),
-    wbCorrection: wbCorrection,
     quality: q,
-    deltaE: d1
+    deltaE: d1,
+    calibrationAge: Date.now() - calibration.timestamp
   };
 }
 
@@ -2039,8 +2571,10 @@ function extractMedianColor(imgData) {
   return [R[mid], G[mid], B[mid]];
 }
 
-function drawPreview(source, padX, padY, padW, padH, scaleX, scaleY, scaleW, scaleH) {
-  var pv = document.getElementById('previewCanvas');
+/* ===== Preview drawing ===== */
+function drawCalibrationPreview(source, guideX, guideY, guideW, guideH, cellW, insetX, sampleW, insetY, sampleH) {
+  var pv = document.getElementById('calPreviewCanvas');
+  if (!pv) return;
   var pvCtx = pv.getContext('2d');
   var maxW = Math.min(800, source.width);
   var scale = maxW / source.width;
@@ -2048,28 +2582,132 @@ function drawPreview(source, padX, padY, padW, padH, scaleX, scaleY, scaleW, sca
   pv.height = Math.round(source.height * scale);
   pvCtx.drawImage(source, 0, 0, pv.width, pv.height);
 
+  // Outer guide rectangle
+  pvCtx.strokeStyle = 'rgba(212, 255, 58, 0.4)';
+  pvCtx.lineWidth = 1;
+  pvCtx.setLineDash([4, 3]);
+  pvCtx.strokeRect(guideX * scale, guideY * scale, guideW * scale, guideH * scale);
+
+  // 7 sample cells
+  pvCtx.setLineDash([]);
   pvCtx.strokeStyle = '#d4ff3a';
   pvCtx.lineWidth = 2;
-  pvCtx.setLineDash([6, 4]);
-  pvCtx.strokeRect(padX * scale, padY * scale, padW * scale, padH * scale);
+  for (var k = 0; k < 7; k++) {
+    var sx = (guideX + k * cellW + insetX) * scale;
+    var sy = (guideY + insetY) * scale;
+    pvCtx.strokeRect(sx, sy, sampleW * scale, sampleH * scale);
 
-  pvCtx.setLineDash([]);
-  pvCtx.strokeStyle = 'rgba(212, 255, 58, 0.5)';
-  pvCtx.lineWidth = 1;
-  pvCtx.strokeRect(scaleX * scale, scaleY * scale, scaleW * scale, scaleH * scale);
-
-  pvCtx.fillStyle = 'rgba(10, 14, 20, 0.85)';
-  pvCtx.fillRect(padX * scale, padY * scale - 22, 50, 20);
-  pvCtx.fillStyle = '#d4ff3a';
-  pvCtx.font = 'bold 11px -apple-system, monospace';
-  pvCtx.fillText('ROI', padX * scale + 4, padY * scale - 7);
+    // Label
+    pvCtx.fillStyle = 'rgba(10, 14, 20, 0.85)';
+    pvCtx.fillRect(sx, sy - 16, 32, 14);
+    pvCtx.fillStyle = '#d4ff3a';
+    pvCtx.font = 'bold 9px -apple-system, monospace';
+    pvCtx.fillText(REFERENCE[k].label, sx + 3, sy - 5);
+  }
 }
 
-/* ===== Result display ===== */
+function drawMeasurementPreview(source, sx, sy, sw, sh, guideX, guideY, guideW, guideH) {
+  var pv = document.getElementById('previewCanvas');
+  if (!pv) return;
+  var pvCtx = pv.getContext('2d');
+  var maxW = Math.min(800, source.width);
+  var scale = maxW / source.width;
+  pv.width = maxW;
+  pv.height = Math.round(source.height * scale);
+  pvCtx.drawImage(source, 0, 0, pv.width, pv.height);
+
+  // Outer guide
+  pvCtx.strokeStyle = 'rgba(212, 255, 58, 0.35)';
+  pvCtx.lineWidth = 1;
+  pvCtx.setLineDash([4, 3]);
+  pvCtx.strokeRect(guideX * scale, guideY * scale, guideW * scale, guideH * scale);
+
+  // Inner sample ROI
+  pvCtx.setLineDash([]);
+  pvCtx.strokeStyle = '#d4ff3a';
+  pvCtx.lineWidth = 2;
+  pvCtx.strokeRect(sx * scale, sy * scale, sw * scale, sh * scale);
+
+  pvCtx.fillStyle = 'rgba(10, 14, 20, 0.85)';
+  pvCtx.fillRect(sx * scale, sy * scale - 22, 60, 20);
+  pvCtx.fillStyle = '#d4ff3a';
+  pvCtx.font = 'bold 11px -apple-system, monospace';
+  pvCtx.fillText('ROI', sx * scale + 4, sy * scale - 7);
+}
+
+/* ===== Calibration result display ===== */
+function showCalibrationResult(calResult) {
+  // Store pending calibration (user needs to accept it)
+  window._pendingCalibration = calResult;
+
+  document.getElementById('cameraView').classList.remove('active');
+  stopCamera();
+  document.getElementById('startView').classList.remove('active');
+  document.getElementById('resultView').classList.remove('active');
+  document.getElementById('calibrationView').classList.add('active');
+
+  var mainEl = document.querySelector('main');
+  if (mainEl) mainEl.scrollTop = 0;
+
+  document.getElementById('statusPill').textContent = '● Kalibrierung';
+
+  // Render measured and reference rows
+  var measuredRow = document.getElementById('calMeasuredRow');
+  var referenceRow = document.getElementById('calReferenceRow');
+  measuredRow.innerHTML = '';
+  referenceRow.innerHTML = '';
+
+  for (var k = 0; k < 7; k++) {
+    var m = document.createElement('div');
+    m.className = 'cell';
+    m.style.backgroundColor = 'rgb(' + calResult.measuredRgb[k].join(',') + ')';
+    m.innerHTML = '<div class="label">' + REFERENCE[k].label + '</div>';
+    measuredRow.appendChild(m);
+
+    var r = document.createElement('div');
+    r.className = 'cell';
+    r.style.backgroundColor = 'rgb(' + REFERENCE[k].rgb.join(',') + ')';
+    r.innerHTML = '<div class="label">' + REFERENCE[k].label + '</div>';
+    referenceRow.appendChild(r);
+  }
+
+  // Diagnostic message
+  var diag = calResult.diagnostics;
+  var qualityBox = document.getElementById('calQualityBox');
+  var qualityText = document.getElementById('calQualityText');
+  var btnAccept = document.getElementById('btnCalAccept');
+
+  var html = '';
+  if (diag.usable && diag.score > 0.85) {
+    html = '<p><strong>Kalibrierung plausibel.</strong> Farbverlauf monoton, Dynamikumfang ΔL* = ' + diag.totalRange.toFixed(1) + ', mittlere Feldabstände ΔE = ' + diag.avgStep.toFixed(1) + '. Kann für Messungen verwendet werden.</p>';
+    qualityBox.style.borderLeftColor = '#4ade80';
+    btnAccept.disabled = false;
+    btnAccept.textContent = 'Übernehmen';
+  } else if (diag.usable) {
+    html = '<p><strong>Kalibrierung brauchbar, aber suboptimal.</strong> ΔL* = ' + diag.totalRange.toFixed(1) + ', ΔE = ' + diag.avgStep.toFixed(1) + '.</p>';
+    if (diag.warnings.length) {
+      html += '<p style="font-size:11px; color: var(--text-dim);">⚠ ' + diag.warnings.join(' · ') + '</p>';
+    }
+    qualityBox.style.borderLeftColor = '#ffb84d';
+    btnAccept.disabled = false;
+    btnAccept.textContent = 'Trotzdem übernehmen';
+  } else {
+    html = '<p><strong>Kalibrierung unbrauchbar.</strong></p>';
+    html += '<p style="font-size:12px; color: var(--text-dim);">' + diag.issues.join('<br>') + '</p>';
+    html += '<p style="font-size:12px;">Bitte wiederholen: Skala <strong>bündig</strong> im Rahmen, alle 7 Felder sichtbar, gleichmäßige diffuse Beleuchtung, scharf.</p>';
+    qualityBox.style.borderLeftColor = '#ff5b5b';
+    btnAccept.disabled = true;
+    btnAccept.textContent = 'Nicht geeignet';
+  }
+  qualityText.innerHTML = html;
+}
+
+/* ===== Measurement result display ===== */
 function showResult(r) {
   document.getElementById('cameraView').classList.remove('active');
   stopCamera();
   document.getElementById('startView').classList.remove('active');
+  document.getElementById('calibrationView').classList.remove('active');
   document.getElementById('resultView').classList.add('active');
 
   var mainEl = document.querySelector('main');
@@ -2100,15 +2738,16 @@ function showResult(r) {
 
   document.getElementById('swatchMeasured').style.backgroundColor =
     'rgb(' + r.measuredRgb.join(',') + ')';
+  // Reference = calibrated color (what was actually seen under same lighting)
   document.getElementById('swatchReference').style.backgroundColor =
     'rgb(' + r.closest.rgb.join(',') + ')';
 
   var q = r.quality;
   document.getElementById('mLum').innerHTML =
     Math.round(q.luminance) + ' <span class="secondary">/255</span>';
+  var ageH = Math.round(r.calibrationAge / 3600000);
   document.getElementById('mWB').innerHTML =
-    (r.wbCorrection ? 'korrigiert' : 'neutral') +
-    ' <span class="secondary">Δ' + Math.round(q.wbDeviation) + '</span>';
+    'kalibriert <span class="secondary">' + (ageH < 1 ? '<1h' : ageH + 'h') + ' alt</span>';
   document.getElementById('mSharp').innerHTML =
     Math.round(q.sharpness) + ' <span class="secondary">σ²</span>';
   document.getElementById('mDeltaE').innerHTML =
@@ -2180,17 +2819,82 @@ function bindTap(el, handler) {
   el.addEventListener('click', handler);
 }
 
-bindTap(document.getElementById('btnStart'), function() {
+/* ===== Open camera in a specific mode ===== */
+function openCameraInMode(mode) {
+  currentMode = mode;
+
+  // Show correct guide overlay
+  if (mode === MODE_CALIBRATE) {
+    guideCalibration.style.display = 'block';
+    guideMeasure.style.display = 'none';
+  } else {
+    guideCalibration.style.display = 'none';
+    guideMeasure.style.display = 'block';
+  }
+
+  // Hide other views, show camera
   document.getElementById('startView').classList.remove('active');
+  document.getElementById('resultView').classList.remove('active');
+  document.getElementById('calibrationView').classList.remove('active');
   document.getElementById('cameraView').classList.add('active');
-  document.getElementById('statusPill').textContent = '● Kamera';
+  document.getElementById('statusPill').textContent =
+    mode === MODE_CALIBRATE ? '● Kalibrieren' : '● Messen';
+
+  // Update camera-status message
+  camStatusMsg.textContent = mode === MODE_CALIBRATE
+    ? 'Merckoquant-Skala horizontal in den Rahmen bringen'
+    : 'Reaktionsfeld des Streifens im Fadenkreuz zentrieren';
+
   startCamera().then(function(ok) {
     if (!ok) {
       document.getElementById('cameraView').classList.remove('active');
       document.getElementById('startView').classList.add('active');
       document.getElementById('statusPill').textContent = '● Bereit';
+      currentMode = null;
     }
   });
+}
+
+bindTap(document.getElementById('btnCalibrate'), function() {
+  openCameraInMode(MODE_CALIBRATE);
+});
+
+bindTap(document.getElementById('btnMeasure'), function() {
+  if (!calibration) {
+    showError(
+      'Keine Kalibrierung vorhanden',
+      'Bitte zuerst die Merckoquant-Farbskala fotografieren, um die App auf die aktuellen Lichtverhältnisse einzustellen.'
+    );
+    return;
+  }
+  openCameraInMode(MODE_MEASURE);
+});
+
+/* Accept / redo calibration */
+bindTap(document.getElementById('btnCalAccept'), function() {
+  if (!window._pendingCalibration) return;
+  var saved = saveCalibration(window._pendingCalibration);
+  if (!saved) {
+    showError(
+      'Speicherung fehlgeschlagen',
+      'Die Kalibrierung konnte nicht gespeichert werden. Möglicherweise ist der private Browsing-Modus aktiv oder der Speicher voll.'
+    );
+    return;
+  }
+  calibration = window._pendingCalibration;
+  window._pendingCalibration = null;
+  updateCalibrationStatusUI();
+  document.getElementById('calibrationView').classList.remove('active');
+  document.getElementById('startView').classList.add('active');
+  document.getElementById('statusPill').textContent = '● Bereit';
+  var mainEl = document.querySelector('main');
+  if (mainEl) mainEl.scrollTop = 0;
+});
+
+bindTap(document.getElementById('btnCalRedo'), function() {
+  window._pendingCalibration = null;
+  document.getElementById('calibrationView').classList.remove('active');
+  openCameraInMode(MODE_CALIBRATE);
 });
 
 bindTap(document.getElementById('btnCancel'), function() {
@@ -2198,6 +2902,7 @@ bindTap(document.getElementById('btnCancel'), function() {
   document.getElementById('cameraView').classList.remove('active');
   document.getElementById('startView').classList.add('active');
   document.getElementById('statusPill').textContent = '● Bereit';
+  currentMode = null;
 });
 
 bindTap(document.getElementById('btnShutter'), function() {
@@ -2209,7 +2914,7 @@ bindTap(bigCapture, function() {
   captureAndAnalyze();
 });
 
-/* Tap on video → focus (must use click, not touchstart, to get coords reliably) */
+/* Tap on video → focus */
 video.addEventListener('click', handleVideoTap);
 
 /* Zoom slider */
@@ -2219,16 +2924,9 @@ zoomSlider.addEventListener('change', handleZoomChange);
 bindTap(btnTorch, toggleTorch);
 
 bindTap(document.getElementById('btnAgain'), function() {
+  // From result view → back to measurement mode
   document.getElementById('resultView').classList.remove('active');
-  document.getElementById('cameraView').classList.add('active');
-  document.getElementById('statusPill').textContent = '● Kamera';
-  startCamera().then(function(ok) {
-    if (!ok) {
-      document.getElementById('cameraView').classList.remove('active');
-      document.getElementById('startView').classList.add('active');
-      document.getElementById('statusPill').textContent = '● Bereit';
-    }
-  });
+  openCameraInMode(MODE_MEASURE);
 });
 
 bindTap(document.getElementById('btnExport'), function() {
@@ -2239,8 +2937,14 @@ bindTap(document.getElementById('btnExport'), function() {
     device: 'Merckoquant 1.10007',
     parameter: 'NO2- (Nitrit)',
     value_mg_per_L: value,
-    method: 'Kolorimetrisch / Smartphone-Auswertung',
-    note: 'Halbquantitative Bestimmung, keine Laborreferenz'
+    method: 'Kolorimetrisch / Smartphone-Auswertung (CIE Lab ΔE)',
+    calibration: calibration ? {
+      timestamp: new Date(calibration.timestamp).toISOString(),
+      age_minutes: Math.round((Date.now() - calibration.timestamp) / 60000),
+      measured_rgb: calibration.measuredRgb,
+      diagnostics: calibration.diagnostics || null
+    } : null,
+    note: 'Halbquantitative Bestimmung, keine Laborreferenz. Kalibrierung gerätegebunden.'
   };
   var text = JSON.stringify(data, null, 2);
   var fname = 'no2_messung_' + timestamp.slice(0,19).replace(/[:.]/g,'-') + '.json';
@@ -2311,9 +3015,33 @@ document.addEventListener('visibilitychange', function() {
       document.getElementById('cameraView').classList.remove('active');
       document.getElementById('startView').classList.add('active');
       document.getElementById('statusPill').textContent = '● Bereit';
+      currentMode = null;
     }
   }
 });
+
+/* Long-press (1.5s) on calibration status box → offer to reset calibration */
+(function() {
+  var calBox = document.getElementById('calStatus');
+  if (!calBox) return;
+  var pressTimer = null;
+  function clearTimer() {
+    if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
+  }
+  calBox.addEventListener('touchstart', function() {
+    clearTimer();
+    pressTimer = setTimeout(function() {
+      pressTimer = null;
+      if (!calibration) return;
+      if (confirm('Gespeicherte Kalibrierung löschen?')) {
+        clearCalibration();
+      }
+    }, 1500);
+  }, { passive: true });
+  calBox.addEventListener('touchend', clearTimer);
+  calBox.addEventListener('touchmove', clearTimer);
+  calBox.addEventListener('touchcancel', clearTimer);
+})();
 
 /* Prevent iOS pinch-zoom on the app chrome */
 document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
